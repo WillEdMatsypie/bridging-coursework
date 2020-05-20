@@ -53,3 +53,7 @@
     -webkit-line-clamp: 3; /* number of lines to show */
     -webkit-box-orient: vertical;
  }
+
+.comment {
+    margin: 20px 0px 20px 20px;
+}
