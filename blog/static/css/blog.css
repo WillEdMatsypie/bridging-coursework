@@ -41,7 +41,12 @@
     color: #000000;
 }
 
-.text {
+.subtitle{
+    color: #8f8f8f;
+    font-style: italic;
+}
+
+.brief_text {
     overflow: hidden;
     text-overflow: ellipsis;
     display: -webkit-box;
