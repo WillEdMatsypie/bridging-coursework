@@ -18,9 +18,9 @@
                     <a class="btn btn-default" href="{% url 'post_remove' pk=post.pk %}">Delete</span></a>
                 {% endif %}
                 <h1 style="text-align: center;">{{ post.title }}</h1>
-                <div class="sub-box">
-                    <p class="subtitle">{{ post.subtitle }}</p>
-                </div>
+                <hr>
+                <p class="subtitle" style="text-align: center;">{{ post.subtitle }}</p>
+                <hr>
                 <p>{{ post.text |  markdown | safe  }}</p>
                 <hr>
                 <a class="btn btn-default" href="{% url 'add_comment_to_post' pk=post.pk %}">Add comment</a>
