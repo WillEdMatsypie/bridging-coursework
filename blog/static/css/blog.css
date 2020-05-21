@@ -20,3 +20,14 @@ body {
     float: none; /* Added */
     margin-bottom: 10px; /* Added */
 }
+
+.bw {
+    filter: grayscale(100%);
+}
+
+.center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+  }
