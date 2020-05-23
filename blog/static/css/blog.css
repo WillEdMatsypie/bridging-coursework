@@ -31,3 +31,17 @@ body {
     margin-right: auto;
     width: 50%;
   }
+
+a {
+    color: black;
+}
+
+a:hover {
+    color: black ;
+  }
+
+.btn-outline-dark {
+    border-radius: 0;
+    border-width: 2px;
+    font-weight: 500;
+}

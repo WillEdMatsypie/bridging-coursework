@@ -11,7 +11,7 @@
                             <div class="date">
                                 <p>published: {{ post.published_date }}</p>
                             </div>
-                            <h5 class="card-title"><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h5>
+                            <h4 class="card-title"><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h4>
                             <p class="brief_text subtitle card-text">{{ post.subtitle|linebreaksbr }}</p>
                             <a href="{% url 'post_detail' pk=post.pk %}">Comments: {{ post.approved_comments.count }}</a>
                         </div>
