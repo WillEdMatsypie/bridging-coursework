@@ -16,9 +16,9 @@ body {
 }
 
 .card {
-    margin: 0 auto; /* Added */
-    float: none; /* Added */
-    margin-bottom: 10px; /* Added */
+    margin: 0 auto; 
+    float: none; 
+    margin-bottom: 10px; 
 }
 
 .bw {
@@ -45,3 +45,29 @@ a:hover {
     border-width: 2px;
     font-weight: 500;
 }
+
+.btn-outline-dark.big {
+    border-width: 5px;
+    font-size: large;
+    font-weight: 700;
+}
+
+.social-btn {
+    color: black;
+    border: 3px solid black; 
+    border-radius: 500px;
+    font-size: xx-large;   
+    align-items: center;
+    vertical-align: middle;
+    padding: 1%;
+    display: inline-block;
+    transition: 0.5s;
+}
+
+.social-btn:hover {
+    color: white;
+    background-color: black;
+    border-color: rgb(200, 200, 200);
+    text-decoration: none;
+}
+

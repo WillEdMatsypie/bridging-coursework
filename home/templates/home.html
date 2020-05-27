@@ -1,7 +1,39 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
 
-    <h1> Hello There</h1>
+
+
+    <div class="home">
+        <div class="card border-0 shadow my-3">
+            <div class="card-body p-5" style="text-align: center;">
+                <h1>Zenith</h1>
+                <hr>
+                <p class="subtitle" style="text-align: center;">Find your Zenith.</p>
+                <hr>
+                <h4>My name is William Matson.</h4>
+                <img style="width:25%" src="{% static 'images/home_image.jpg' %}"/>
+                <h5>I am a Degree Apprentice with Vodafone studying Computer Science at the University of Birmingham.</h5>
+                <h5><small>Welcome to my website, feel free to check out my links below and explore the site.</small></h5>
+                <row>
+                    <a class="fab fa-twitter social-btn" href="https://twitter.com/Willedmats"></a>
+                    <a class="fab fa-instagram social-btn" href="https://www.instagram.com/willedmatsypie/"></a>
+                    <a class="fab fa-spotify social-btn" href="https://open.spotify.com/user/willedmatsypie?si=FWpbPgjoTW2XyX0FGkP7fw"></a>
+                    <a class="fab fa-linkedin social-btn" href="https://www.linkedin.com/in/william-matson-589409171/"></a>
+                    <a class="fab fa-github social-btn" href="https://github.com/WillEdMatsypie"></a>
+                </row>
+                <hr>
+                <a class="btn btn-outline-dark big" href="/blog/">My Blog</span></a>
+                <br>
+                <br>
+                <p>Check out my blog, I write about my experiences and hobbies!</p>
+                <hr>
+                <a class="btn btn-outline-dark big" href="...">Interactive CV</span></a>
+                <br>
+                <br>
+                <p>A copy of my CV but as webpage! Check it out.</p>
+            </div>
+        </div>
+    </div>
 
 {% endblock %}
