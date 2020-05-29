@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import time
 import unittest
+from django.test import Client
 
 class NewVisitorTest(unittest.TestCase):
 
@@ -12,9 +13,6 @@ class NewVisitorTest(unittest.TestCase):
         self.browser.quit()
 
     def base_html_loads(self):
-        # Open the website in the browser
-        self.browser.get('http://localhost:8000')
-
         # Sees Page Title and sees nav-bar
         self.assertIn('Zenith', self.browser.title)
         header_text = self.browser.find_element_by_class_name('navbar-brand').text
