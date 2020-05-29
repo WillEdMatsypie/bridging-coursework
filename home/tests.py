@@ -22,4 +22,4 @@ class HomePageTest(TestCase):
         self.assertTrue(html.strip().startswith('<html>'))  
         self.assertIn('<title>Zenith\'s Blog</title>', html)  
         self.assertIn('<h1>Zenith</h1>', html)
-        self.assertTrue(html.endswith('</html>'))  
+        self.assertTrue(html.strip().endswith('</html>'))  
