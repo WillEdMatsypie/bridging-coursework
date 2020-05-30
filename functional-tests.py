@@ -63,5 +63,17 @@ class NewVisitorTest(unittest.TestCase):
         self.assertTrue(any(section.text == 'Experience' for section in headings))
         self.assertTrue(any(section.text == 'Interests' for section in headings))
 
+    def test_add_education(self):
+        self.browser.get('http://localhost:8000/cv')
 
+        # Click button for new education
+        new_button = self.browser.find_element_id("new-education")
+        new_button.click()
+
+        # Display new education form
+        self.base_html_loads()
+
+        # Notice all applicable fields
+
+        
         # In Terminal use the command `python manage.py test functional-tests` to run these
