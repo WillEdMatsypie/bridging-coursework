@@ -45,4 +45,23 @@ class NewVisitorTest(unittest.TestCase):
         self.assertTrue(any(btn.text == 'My Blog' and 'blog' in btn.get_attribute("href") for btn in page_btns))
         self.assertTrue(any(btn.text == 'Interactive CV' and 'cv' in btn.get_attribute("href") for btn in page_btns))
 
+    def test_view_cv_page(self):
+        self.browser.get('http://localhost:8000/cv')
+
+        # Check Title & Nav-bar
+        self.base_html_loads()
+
+        # See Name at start of CV
+        title_text = self.browser.find_element_by_tag_name('h1').text
+        self.assertIn('William Matson', title_text)
+
+        # See section headings in CV
+        headings = self.browser.find_elements_by_class_name('section-header')
+        self.assertTrue(any(section.text == 'Summary' for section in headings))
+        self.assertTrue(any(section.text == 'Skills' for section in headings))
+        self.assertTrue(any(section.text == 'Education' for section in headings))
+        self.assertTrue(any(section.text == 'Experience' for section in headings))
+        self.assertTrue(any(section.text == 'Interests' for section in headings))
+
+
         # In Terminal use the command `python manage.py test functional-tests` to run these
