@@ -1,7 +1,20 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="home">
+<script>
+    function showToggle() {
+        $(this).collapse('toggle')
+    }
+    $(document).ready(function(){       
+        $(".collapse").on('show.bs.collapse', function(){ //When viewing the content of collapse, down becomes an up
+        	$(this).prev(".card-header").find(".icon-switch").removeClass("fa-chevron-down").addClass("fa-chevron-up");
+        }).on('hide.bs.collapse', function(){ //When hiding the content of collapse, up switches back to a down
+        	$(this).prev(".card-header").find(".icon-switch").removeClass("fa-chevron-up").addClass("fa-chevron-down");
+        });
+    });
+</script>
+
+<div class="cv">
     <div class="card border-0 shadow my-3">
         <div class="card-body p-5">
             <h1 style="text-align: center;">William Matson</h1>
@@ -9,6 +22,25 @@
             <h3 class="section-header">Summary</h3>
             <hr>
             <h3 class="section-header">Skills</h3>
+            {% if user.is_authenticated %}
+                <a class="btn btn-outline-dark" href="{% url 'education_new' %}" id="new-education">New Education</span></a>
+            {% endif %}
+            {% for item in education %}
+                <div class="card">
+                    <div class="card-header collapse-head" data-toggle="collapse" data-target="#collapseEducation{{item.pk}}" aria-expanded="false" aria-controls="collapseEducation{{item.pk}}" onclick="showToggle()" >
+                        <h2 class="mb-0" style="font-size: x-large; color: darkred;">
+                            <i class="fa icon-switch fa-chevron-down"></i> {{item.title}}
+                        </h2>
+                        <p>{{item.location}} ({{item.start_date}} - {{item.end_date}}) <br> {{item.brief_text}}</p>
+                    </div>
+                    <div id="collapseEducation{{item.pk}}" class="collapse">
+                        <div class="card-body">
+                            {{item.detailed_text|linebreaksbr}}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
             <hr>
             <h3 class="section-header">Education</h3>
             <hr>
@@ -19,4 +51,4 @@
     </div>
 </div>
     
-    {% endblock %}
+    {% endblock %}        

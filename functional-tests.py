@@ -3,7 +3,7 @@ from selenium.webdriver.common.keys import Keys
 import time
 import unittest
 
-class NewVisitorTest(unittest.TestCase):
+class FunctionalTest(unittest.TestCase):
 
     def setUp(self):
         self.browser = webdriver.Firefox()
@@ -67,7 +67,7 @@ class NewVisitorTest(unittest.TestCase):
         self.browser.get('http://localhost:8000/cv')
 
         # Click button for new education
-        new_button = self.browser.find_element_id("new-education")
+        new_button = self.browser.find_element_by_id("new-education")
         new_button.click()
 
         # Display new education form
@@ -75,5 +75,6 @@ class NewVisitorTest(unittest.TestCase):
 
         # Notice all applicable fields
 
-        
+
         # In Terminal use the command `python manage.py test functional-tests` to run these
+        # admin testPass123
