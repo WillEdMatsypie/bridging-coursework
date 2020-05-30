@@ -11,6 +11,13 @@ class FunctionalTest(unittest.TestCase):
     def tearDown(self):
         self.browser.quit()
 
+    def login(self):
+        self.browser.get('http://localhost:8000/accounts/login')
+        self.browser.find_element_by_id('id_username').send_keys('admin')
+        self.browser.find_element_by_id('id_password').send_keys('testPass123')
+        login_button = self.browser.find_element_by_id("login-button")
+        login_button.click()
+
     def base_html_loads(self):
         # Sees Page Title and sees nav-bar
         self.assertIn('Zenith', self.browser.title)
@@ -64,6 +71,8 @@ class FunctionalTest(unittest.TestCase):
         self.assertTrue(any(section.text == 'Interests' for section in headings))
 
     def test_add_education(self):
+        # Login to edit
+        self.login()
         self.browser.get('http://localhost:8000/cv')
 
         # Click button for new education
@@ -75,6 +84,7 @@ class FunctionalTest(unittest.TestCase):
 
         # Notice all applicable fields
 
+        self.browser.get('http://localhost:8000/accounts/logout')
 
         # In Terminal use the command `python manage.py test functional-tests` to run these
         # admin testPass123
