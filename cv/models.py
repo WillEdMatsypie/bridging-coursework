@@ -12,3 +12,14 @@ class Education(models.Model):
 
     def __str__(self):
         return self.title
+
+class Skill(models.Model):
+    TYPE_CHOICES = (
+    ('technical','TECHNICAL'),
+    ('other', 'OTHER'),
+    )
+    title = models.CharField(max_length=200)
+    skill_type = models.CharField(max_length=10, choices=TYPE_CHOICES, default='technical')
+
+    def __str__(self):
+        return self.title + " " + self.skill_type
