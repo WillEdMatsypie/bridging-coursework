@@ -2,8 +2,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 
 from django.contrib.auth.decorators import login_required
-from .models import Education
-from .forms import EducationForm
+from .models import Education, Skill
+from .forms import EducationForm, SkillForm
 
 
 # Create your views here.
@@ -33,14 +33,14 @@ def education_remove(request, pk):
 
 @login_required
 def skill_new(request):
-    # if request.method == "POST":
-    #     form = EducationForm(request.POST)
-    #     if form.is_valid():
-    #         education = form.save(commit=False)
-    #         education.save()
-    #         return redirect('cv')
-    # else:
-    #     form = EducationForm()
+    if request.method == "POST":
+        form = SkillForm(request.POST)
+        if form.is_valid():
+            skill = form.save(commit=False)
+            skill.save()
+            return redirect('cv')
+    else:
+        form = SkillForm()
     return render(request, 'cv/skill_edit.html', {'form': form})
 
 @login_required
