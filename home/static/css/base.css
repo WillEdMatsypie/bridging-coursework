@@ -84,17 +84,17 @@ a:hover {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     grid-gap: 1px;
     border: 1px solid #aaaaaa;
-    padding: 5px;
   }
-  .skill-item {
-    border: 1px solid black;
-    padding: 5px;
+.skill-item {
+    border-right: inherit;
+    border-bottom: inherit;
+    padding: 10px;
     font-size: 20px;
     text-align: center;
     margin-right: -1px;
     margin-bottom: -1px;
   }
-  .skill-heading {
+.skill-heading {
     color: darkred;
-    grid-column: 1 / 6;
+    grid-column: 1 / 5;
   }
