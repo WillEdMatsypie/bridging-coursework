@@ -26,9 +26,15 @@
                 {% if user.is_authenticated %}
                     <a class="btn btn-outline-dark" href="{% url 'skill_new' %}" id="new-skill">New Skill</span></a>
                 {% endif %}
-                <div class="skill-container">
+                <div class="skill-container" id="tech-skill-table">
                     <div class="skill-item skill-heading"><h3>Technical Skills</h3></div>
                     {% for item in tech_skills %}
+                    <div class="skill-item">{{item.title}} {% if user.is_authenticated %}<a class="fa icon-switch fa-trash delete_btn" href="{% url 'skill_remove' pk=item.pk %}"></a>{% endif %}</div>
+                    {% endfor %}
+                </div>
+                <div class="skill-container" id="other-skill-table">
+                    <div class="skill-item skill-heading"><h3>Other Skills</h3></div>
+                    {% for item in other_skills %}
                     <div class="skill-item">{{item.title}} {% if user.is_authenticated %}<a class="fa icon-switch fa-trash delete_btn" href="{% url 'skill_remove' pk=item.pk %}"></a>{% endif %}</div>
                     {% endfor %}
                 </div>

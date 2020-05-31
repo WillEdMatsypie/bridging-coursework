@@ -10,7 +10,9 @@ from .forms import EducationForm, SkillForm
 
 def show_cv(request):
     education = Education.objects.all()
-    return render(request, 'cv/cv.html', {'education': education})
+    tech_skills = Skill.objects.filter(skill_type__exact="technical")
+    other_skills = Skill.objects.filter(skill_type__exact="other")
+    return render(request, 'cv/cv.html', {'education': education, 'tech_skills':tech_skills, 'other_skills':other_skills})
 
 @login_required
 def education_new(request):

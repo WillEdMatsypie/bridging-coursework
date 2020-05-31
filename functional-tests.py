@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import Select
 import time
 import unittest
 
@@ -84,23 +85,78 @@ class FunctionalTest(unittest.TestCase):
 
         # Notice all applicable fields
         title = self.browser.find_element_by_id("id_title")
-        skill_type = self.browser.find_element_by_id("id_skill_type")
+        skill_type = Select(self.browser.find_element_by_id('id_skill_type'))
+        save = self.browser.find_element_by_class_name("save")
 
         # Fill in the form
+        title.send_keys("Skill Tech 1")
+        skill_type.select_by_visible_text("TECHNICAL")
+        save.click()
 
-        # Notice correct data displayed
+        # Add a skill which is other
+        new_button = self.browser.find_element_by_id("new-skill")
+        new_button.click()
+        self.base_html_loads()
 
+        title = self.browser.find_element_by_id("id_title")
+        skill_type = Select(self.browser.find_element_by_id('id_skill_type'))
+        save = self.browser.find_element_by_class_name("save")
+
+        title.send_keys("Skill Other 1")
+        skill_type.select_by_visible_text("OTHER")
+        save.click()
+
+        # Notice the tables
+        tech_table = self.browser.find_element_by_id("tech-skill-table")
+        other_table = self.browser.find_element_by_id("other-skill-table")
+
+        # Check table header
+        table_head = tech_table.find_element_by_tag_name('h3').text
+        self.assertIn('Technical Skills', table_head)
+
+        # Check item is displayed and other item is not
+        items = tech_table.find_elements_by_class_name("skill-item")
+        self.assertTrue(any(item.text == 'Skill Tech 1' for item in items))
+        self.assertFalse(any(item.text == 'Skill Other 1' for item in items))
+        
         # find the specific item
+        for item in items:
+            if 'Skill Tech 1' in item.text:
+                tech_skill = item
 
-        # Toggle collapse
+        # Repeat for other table
+        table_head = other_table.find_element_by_tag_name('h3').text
+        self.assertIn('Other Skills', table_head)
 
-        # Check item has all data
+        items = other_table.find_elements_by_class_name("skill-item")
+        self.assertTrue(any(item.text == 'Skill Other 1' for item in items))
+        self.assertFalse(any(item.text == 'Skill Tech 1' for item in items))
 
-        # Check close collapse
+        # Delete tech item
+        delete_btn = tech_skill.find_element_by_class_name("delete_btn")
+        delete_btn.click()
+        time.sleep(1)
+        tech_table = self.browser.find_element_by_id("tech-skill-table")
+        items = tech_table.find_elements_by_class_name("skill-item")
+        self.assertFalse(any(item.text == 'Skill Tech 1' for item in items))
 
-        # Delete item
-        self.fail("finish test!")
 
+        # Delete other item
+        other_table = self.browser.find_element_by_id("other-skill-table")
+
+        items = other_table.find_elements_by_class_name("skill-item")
+        for item in items:
+            if 'Skill Other 1' in item.text:
+                other_skill = item
+
+        delete_btn = other_skill.find_element_by_class_name("delete_btn")
+        delete_btn.click()
+        time.sleep(1)
+
+        other_table = self.browser.find_element_by_id("other-skill-table")
+
+        items = other_table.find_elements_by_class_name("skill-item")
+        self.assertFalse(any(item.text == 'Skill Other 1' for item in items))
 
         self.browser.get('http://localhost:8000/accounts/logout')
     
