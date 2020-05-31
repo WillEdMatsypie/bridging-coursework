@@ -27,3 +27,16 @@ class EducationForm(forms.ModelForm):
             'class': 'form-control',
             'placeholder': 'Detailed Text...'})
          }
+
+class SkillForm(forms.ModelForm):
+
+    class Meta:
+        model = Skill
+        fields = ('title', 'skill_type',)
+        widgets = {
+            'title': forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Title'}),
+            'location': forms.ChoiceField(attrs={
+            'class': 'form-control'}),
+         }
