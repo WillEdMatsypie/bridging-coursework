@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Education
+from .models import Education, Skill
 
 class EducationForm(forms.ModelForm):
 
@@ -37,6 +37,5 @@ class SkillForm(forms.ModelForm):
             'title': forms.TextInput(attrs={
             'class': 'form-control',
             'placeholder': 'Title'}),
-            'location': forms.ChoiceField(attrs={
-            'class': 'form-control'}),
+            'location': forms.ChoiceField(),
          }

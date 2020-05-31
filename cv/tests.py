@@ -4,8 +4,8 @@ from django.http import HttpRequest
 from django.contrib.auth.models import User
 
 from cv.views import show_cv, education_new  
-from cv.models import Education  
-from .forms import EducationForm
+from cv.models import Education, Skill  
+from .forms import EducationForm, SkillForm
 
 class CvPageTest(TestCase):
     
@@ -25,6 +25,103 @@ class CvPageTest(TestCase):
         self.assertIn('<title>Zenith\'s Blog</title>', html)  
         self.assertIn('<h1 style="text-align: center;">William Matson</h1>', html)
         self.assertTrue(html.strip().endswith('</html>'))  
+
+class SkillModelTest(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user('temporary', 'temporary@gmail.com', 'temporary')
+        self.client.login(username='temporary', password='temporary')
+
+    def tearDown(self):
+        self.client.logout()
+        self.user.delete()
+
+    def test_saving_and_retrieving_skill(self):
+        first_item = Skill()
+        first_item.title = "Skill 1"
+        first_item.skill_type = "technical"
+        first_item.save()
+
+
+        second_item = Skill()
+        second_item.title = "Skill 2"
+        second_item.skill_type = "other"
+        second_item.save()
+        
+        saved_items = Skill.objects.all()
+        self.assertEqual(saved_items.count(), 2)
+
+        first_saved_item = saved_items[0]
+        second_saved_item = saved_items[1]
+        self.assertEqual(first_saved_item.title, 'Skill 1')
+        self.assertEqual(second_saved_item.title, 'Skill 2')
+
+    def test_url_resolves_to_skill_form_view(self):
+        found = resolve('/cv/skill/new/')  
+        self.assertEqual(found.func, skill_new)
+    
+    def test_uses_skill_form_template(self):
+        response = self.client.get('/cv/skill/new/')
+        self.assertTemplateUsed(response, 'cv/skill_edit.html')
+
+    def test_skill_form_returns_correct_html(self):
+        request = HttpRequest()  
+        request.user = self.user
+        response = skill_new(request)  
+        html = response.content.decode('utf8')  
+        self.assertTrue(html.strip().startswith('<html>'))  
+        self.assertIn('<title>Zenith\'s Blog</title>', html)  
+        self.assertIn('<h2>New Skill</h2>', html)
+        self.assertTrue(html.strip().endswith('</html>'))  
+    
+    def test_view_skill_form(self):
+        response = self.client.get('/cv/skill/new/')
+        self.assertIsInstance(response.context['form'], SkillForm) 
+        self.assertContains(response, 'name="title"')
+        self.assertContains(response, 'name="skill_type')
+
+    def test_can_save_POST_request_to_education_model(self):
+        data={'title':"Skill 3", 'skill_type':"technical",}
+        response = self.client.post('/cv/skill/new/', data)
+        self.assertEqual(Education.objects.count(), 1)
+        new_item = Skill.objects.first()
+        self.assertEqual(new_item.title, "Skill 3")
+        self.assertEqual(new_item.skill_type, "technical")
+    
+    def test_redirect_after_POST_submission(self):
+        data={'title':"Skill 4", 'skill_type':"other",}
+        response = self.client.post('/cv/skill/new/', data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], "/cv/")
+    
+    def test_error_response_on_incomplete_form(self):
+        data={'title':"", 'skill_type':"",}
+        response = self.client.post('/cv/skill/new/', data)
+        self.assertEqual(Skill.objects.count(), 0) # Doesn't add to DB
+        self.assertTemplateUsed(response, 'cv/skill_edit.html') # Redirects to same page
+    
+    def test_bad_request(self):
+        data={'title':"Oops",}
+        response = self.client.post('cv/skill_edit.html', data)
+        self.assertEqual(Education.objects.count(), 0) #Doesn't add to database
+        
+    def test_skill_deletion(self):
+        data={'title':"Skill 6", 'skill_type':"technical",}
+        self.client.post('/cv/skill/new/', data)
+        self.assertEqual(Skill.objects.count(), 1)
+        new_item = Skill.objects.first()
+        new_item.delete()
+        self.assertEqual(Skill.objects.count(), 0)
+    
+    def test_skill_deletion_url(self):
+        data={'title':"Skill 7", 'skill_type':"other",}
+        self.client.post('/cv/skill/new/', data)
+        self.assertEqual(Skill.objects.count(), 1)
+        new_item = Skill.objects.first()
+        url = "/cv/skill/" + str(new_item.pk) + "/remove/"
+        response = self.client.get(url)
+        self.assertEqual(Skill.objects.count(), 0)
+        self.assertEqual(response['location'], "/cv/")
 
 class EducationModelTest(TestCase):
 
