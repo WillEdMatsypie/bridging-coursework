@@ -29,3 +29,22 @@ def education_remove(request, pk):
     item = get_object_or_404(Education, pk=pk)
     item.delete()
     return redirect('/cv/')
+
+
+@login_required
+def skill_new(request):
+    # if request.method == "POST":
+    #     form = EducationForm(request.POST)
+    #     if form.is_valid():
+    #         education = form.save(commit=False)
+    #         education.save()
+    #         return redirect('cv')
+    # else:
+    #     form = EducationForm()
+    return render(request, 'cv/skill_edit.html', {'form': form})
+
+@login_required
+def skill_remove(request, pk):
+    # item = get_object_or_404(Education, pk=pk)
+    # item.delete()
+    return redirect('/cv/')

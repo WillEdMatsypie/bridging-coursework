@@ -78,3 +78,19 @@ a:hover {
 .collapse-head:hover {
     cursor: pointer
 }
+
+.skill-container {
+    display: grid;
+    grid-template-columns: auto auto auto auto auto;
+    padding: 5px;
+  }
+  .skill-item {
+    border: 1px solid black;
+    padding: 5px;
+    font-size: 20px;
+    text-align: center;
+  }
+  .skill-heading {
+    color: darkred;
+    grid-column: 1 / 6;
+  }
