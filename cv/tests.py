@@ -103,7 +103,7 @@ class SkillModelTest(TestCase):
     def test_bad_request(self):
         data={'title':"Oops",}
         response = self.client.post('cv/skill_edit.html', data)
-        self.assertEqual(Education.objects.count(), 0) #Doesn't add to database
+        self.assertEqual(Skill.objects.count(), 0) #Doesn't add to database
         
     def test_skill_deletion(self):
         data={'title':"Skill 6", 'skill_type':"technical",}
