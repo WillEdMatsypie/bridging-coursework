@@ -81,7 +81,9 @@ a:hover {
 
 .skill-container {
     display: grid;
-    grid-template-columns: auto auto auto auto auto;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-gap: 1px;
+    border: 1px solid #aaaaaa;
     padding: 5px;
   }
   .skill-item {
@@ -89,6 +91,8 @@ a:hover {
     padding: 5px;
     font-size: 20px;
     text-align: center;
+    margin-right: -1px;
+    margin-bottom: -1px;
   }
   .skill-heading {
     color: darkred;
