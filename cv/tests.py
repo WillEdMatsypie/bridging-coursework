@@ -102,7 +102,7 @@ class SkillModelTest(TestCase):
     
     def test_bad_request(self):
         data={'title':"Oops",}
-        response = self.client.post('cv/skill_edit.html', data)
+        response = self.client.post('/cv/skill/new/', data)
         self.assertEqual(Skill.objects.count(), 0) #Doesn't add to database
         
     def test_skill_deletion(self):
@@ -212,7 +212,7 @@ class EducationModelTest(TestCase):
     
     def test_bad_request(self):
         data={'title':"Test no text", 'location':"Institution 5", 'start_date':"", 'end_date':"",}
-        response = self.client.post('cv/education_edit.html', data)
+        response = self.client.post('/cv/education/new/', data)
         self.assertEqual(Education.objects.count(), 0) #Doesn't add to database
         
     def test_education_deletion(self):

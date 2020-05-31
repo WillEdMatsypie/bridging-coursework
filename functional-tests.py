@@ -75,11 +75,11 @@ class FunctionalTest(unittest.TestCase):
         self.login()
         self.browser.get('http://localhost:8000/cv')
 
-        # Click button for new education
+        # Click button for new skill
         new_button = self.browser.find_element_by_id("new-skill")
         new_button.click()
 
-        # Display new education form
+        # Display new skill form
         self.base_html_loads()
 
         # Notice all applicable fields
