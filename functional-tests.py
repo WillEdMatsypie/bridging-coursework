@@ -83,6 +83,65 @@ class FunctionalTest(unittest.TestCase):
         self.base_html_loads()
 
         # Notice all applicable fields
+        title = self.browser.find_element_by_id("id_title")
+        location = self.browser.find_element_by_id("id_location")
+        start_date = self.browser.find_element_by_id("id_start_date")
+        end_date = self.browser.find_element_by_id("id_end_date")
+        brief = self.browser.find_element_by_id("id_brief_text")
+        detail = self.browser.find_element_by_id("id_detailed_text")
+        save = self.browser.find_element_by_class_name("save")
+
+        # Fill in the form
+        title.send_keys("Test Education Title")
+        location.send_keys("Test Location")
+        start_date.send_keys("Test Start Date")
+        end_date.send_keys("Test End Date")
+        brief.send_keys("Test Brief")
+        detail.send_keys("Test Detail")
+        save.click()
+
+        # Notice correct data displayed
+        education_section = self.browser.find_element_by_id("education-section")
+        items = education_section.find_elements_by_class_name("card")
+        self.assertTrue(any('Test Education Title' in item.text for item in items))
+
+        # find the specific item
+        for item in items:
+            if 'Test Education Title' in item.text:
+                header = item.find_element_by_class_name("card-header")
+                body = item.find_element_by_class_name("collapse")
+
+        # Toggle collapse
+        self.assertTrue('collapsed' in header.get_attribute("class"))
+        self.assertTrue('show' not in body.get_attribute("class"))
+        header.click()
+        time.sleep(1)
+        self.assertTrue('collapsed' not in header.get_attribute("class"))
+        self.assertTrue('show' in body.get_attribute("class"))
+
+        # Check item has all data
+        self.assertTrue('Test Location' in header.text)
+        self.assertTrue('Test Start Date' in header.text)
+        self.assertTrue('Test End Date' in header.text)
+        self.assertTrue('Test Brief' in header.text)
+        self.assertTrue('Test Detail' in body.text)
+
+        # Check close collapse
+        header.click()
+        time.sleep(1)
+        self.assertTrue('collapsed' in header.get_attribute("class"))
+        self.assertTrue('show' not in body.get_attribute("class"))
+
+        # Delete item
+        header.click()
+        time.sleep(1)
+        delete_btn = item.find_element_by_class_name("delete_btn")
+        delete_btn.click()
+        time.sleep(1)
+        education_section = self.browser.find_element_by_id("education-section")
+        items = education_section.find_elements_by_class_name("card")
+        self.assertFalse(any('Test Education Title' in item.text for item in items))
+
 
         self.browser.get('http://localhost:8000/accounts/logout')
 

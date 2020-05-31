@@ -23,3 +23,9 @@ def education_new(request):
     else:
         form = EducationForm()
     return render(request, 'cv/education_edit.html', {'form': form})
+
+@login_required
+def education_remove(request, pk):
+    item = get_object_or_404(Education, pk=pk)
+    item.delete()
+    return redirect('/cv/')
