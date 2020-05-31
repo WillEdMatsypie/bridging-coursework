@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.http import HttpRequest
 from django.contrib.auth.models import User
 
-from cv.views import show_cv, education_new  
+from cv.views import show_cv, education_new, skill_new
 from cv.models import Education, Skill  
 from .forms import EducationForm, SkillForm
 
@@ -80,10 +80,10 @@ class SkillModelTest(TestCase):
         self.assertContains(response, 'name="title"')
         self.assertContains(response, 'name="skill_type')
 
-    def test_can_save_POST_request_to_education_model(self):
+    def test_can_save_POST_request_to_skill_model(self):
         data={'title':"Skill 3", 'skill_type':"technical",}
         response = self.client.post('/cv/skill/new/', data)
-        self.assertEqual(Education.objects.count(), 1)
+        self.assertEqual(Skill.objects.count(), 1)
         new_item = Skill.objects.first()
         self.assertEqual(new_item.title, "Skill 3")
         self.assertEqual(new_item.skill_type, "technical")

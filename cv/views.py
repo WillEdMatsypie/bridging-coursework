@@ -45,6 +45,6 @@ def skill_new(request):
 
 @login_required
 def skill_remove(request, pk):
-    # item = get_object_or_404(Education, pk=pk)
-    # item.delete()
+    item = get_object_or_404(Skill, pk=pk)
+    item.delete()
     return redirect('/cv/')
