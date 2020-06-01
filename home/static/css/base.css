@@ -79,13 +79,13 @@ a:hover {
     cursor: pointer
 }
 
-.skill-container {
+.skill-container, .interest-container {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     grid-gap: 1px;
     border: 1px solid #aaaaaa;
   }
-.skill-item {
+.skill-item, .interest-item {
     border-right: inherit;
     border-bottom: inherit;
     padding: 10px;
