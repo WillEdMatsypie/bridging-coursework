@@ -21,8 +21,8 @@
             <hr>
             <h3 class="section-header">Summary</h3>
             <hr>
-            <h3 class="section-header">Skills</h3>
             <div id="skill-section">
+                <h3 class="section-header">Skills</h3>
                 {% if user.is_authenticated %}
                     <a class="btn btn-outline-dark" href="{% url 'skill_new' %}" id="new-skill">New Skill</span></a>
                 {% endif %}
@@ -93,7 +93,13 @@
                 {% endfor %}
             </div>
             <hr>
-            <h3 class="section-header">Interests</h3>
+            <div id="skill-section">
+                <h3 class="section-header">Interests</h3>
+                {% if user.is_authenticated %}
+                    <a class="btn btn-outline-dark" href="{% url 'interest_new' %}" id="new-interest">New Skill</span></a>
+                {% endif %}
+            </div>
+            
         </div>
     </div>
 </div>
