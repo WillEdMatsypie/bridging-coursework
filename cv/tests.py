@@ -3,9 +3,9 @@ from django.test import TestCase
 from django.http import HttpRequest
 from django.contrib.auth.models import User
 
-from cv.views import show_cv, education_new, skill_new
-from cv.models import Education, Skill  
-from .forms import EducationForm, SkillForm
+from cv.views import show_cv, education_new, skill_new, experience_new
+from cv.models import Education, Skill, Experience  
+from .forms import EducationForm, SkillForm, ExperienceForm
 
 class CvPageTest(TestCase):
     
