@@ -23,3 +23,12 @@ class Skill(models.Model):
 
     def __str__(self):
         return self.title + " " + self.skill_type
+
+class Experience(models.Model):
+    title = models.CharField(max_length=200)
+    subtitle = models.CharField(max_length=200)
+    date = models.CharField(max_length=200)
+    text = models.TextField()
+
+    def __str__(self):
+        return self.title

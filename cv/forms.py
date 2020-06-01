@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Education, Skill
+from .models import Education, Skill, Experience
 
 class EducationForm(forms.ModelForm):
 
@@ -38,4 +38,24 @@ class SkillForm(forms.ModelForm):
             'class': 'form-control',
             'placeholder': 'Title'}),
             'location': forms.ChoiceField(),
+         }
+
+class ExperienceForm(forms.ModelForm):
+
+    class Meta:
+        model = Experience
+        fields = ('title', 'subtitle', 'date', 'text',)
+        widgets = {
+            'title': forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Title'}),
+            'subtitle': forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Subtitle'}),
+            'date': forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Date(s)'}),
+            'text': forms.Textarea(attrs={
+            'class': 'form-control',
+            'placeholder': 'Detailed Text about the Experience'})
          }

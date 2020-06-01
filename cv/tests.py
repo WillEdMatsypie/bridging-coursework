@@ -211,7 +211,7 @@ class EducationModelTest(TestCase):
         self.assertTemplateUsed(response, 'cv/education_edit.html') # Redirects to same page
     
     def test_bad_request(self):
-        data={'title':"Test no text", 'location':"Institution 5", 'start_date':"", 'end_date':"",}
+        data={'title':"Test no text", 'location':"Institution 5", 'start_date':"Date 1", 'end_date':"Date 2",}
         response = self.client.post('/cv/education/new/', data)
         self.assertEqual(Education.objects.count(), 0) #Doesn't add to database
         
@@ -231,4 +231,108 @@ class EducationModelTest(TestCase):
         url = "/cv/education/" + str(new_item.pk) + "/remove/"
         response = self.client.get(url)
         self.assertEqual(Education.objects.count(), 0)
+        self.assertEqual(response['location'], "/cv/")
+
+class ExperienceModelTest(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user('temporary', 'temporary@gmail.com', 'temporary')
+        self.client.login(username='temporary', password='temporary')
+
+    def tearDown(self):
+        self.client.logout()
+        self.user.delete()
+
+    def test_saving_and_retrieving_experience(self):
+        first_item = Experience()
+        first_item.title = "Test Experience 1"
+        first_item.subtitle = "Experience 1 Type"
+        first_item.date = "Test 01"
+        first_item.text = "Test 1 Detailed" 
+        first_item.save()
+
+
+        second_item = Experience()
+        second_item.title = "Test Experience 2"
+        second_item.subtitle = "Experience 2 Type"
+        second_item.date = "Test 02"
+        second_item.text = "Test 2 Detailed" 
+        second_item.save()
+        
+
+        saved_items = Experience.objects.all()
+        self.assertEqual(saved_items.count(), 2)
+
+        first_saved_item = saved_items[0]
+        second_saved_item = saved_items[1]
+        self.assertEqual(first_saved_item.title, 'Test Experience 1')
+        self.assertEqual(second_saved_item.title, 'Test Experience 2')
+
+    def test_url_resolves_to_experience_form_view(self):
+        found = resolve('/cv/experience/new/')  
+        self.assertEqual(found.func, experience_new)
+    
+    def test_uses_experience_form_template(self):
+        response = self.client.get('/cv/experience/new/')
+        self.assertTemplateUsed(response, 'cv/experience_edit.html')
+
+    def test_experience_form_returns_correct_html(self):
+        request = HttpRequest()  
+        request.user = self.user
+        response = experience_new(request)  
+        html = response.content.decode('utf8')  
+        self.assertTrue(html.strip().startswith('<html>'))  
+        self.assertIn('<title>Zenith\'s Blog</title>', html)  
+        self.assertIn('<h2>New Experience</h2>', html)
+        self.assertTrue(html.strip().endswith('</html>'))  
+    
+    def test_view_experience_form(self):
+        response = self.client.get('/cv/experience/new/')
+        self.assertIsInstance(response.context['form'], ExperienceForm) 
+        self.assertContains(response, 'name="title"')
+        self.assertContains(response, 'name="subtitle"')
+        self.assertContains(response, 'name="date"')
+        self.assertContains(response, 'name="text"')
+
+    def test_can_save_POST_request_to_experience_model(self):
+        data={'title':"Test Experience 3", 'subtitle':"Experience Type 3", 'date':"Test 03", 'text':"Test 3 Detailed",}
+        response = self.client.post('/cv/experience/new/', data)
+        self.assertEqual(Experience.objects.count(), 1)
+        new_item = Experience.objects.first()
+        self.assertEqual(new_item.title, "Test Experience 3")
+        self.assertEqual(new_item.text, "Test 3 Detailed")
+    
+    def test_redirect_after_POST_submission(self):
+        data={'title':"Test Experience 4", 'subtitle':"Experience Type 4", 'date':"Test 04", 'text':"Test 4 Detailed",}
+        response = self.client.post('/cv/experience/new/', data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], "/cv/")
+    
+    def test_error_response_on_incomplete_form(self):
+        data={'title':"Test Blank Date", 'subtitle':"Experience Type 5", 'date':"", 'text':"Test 5 Detailed",}
+        response = self.client.post('/cv/experience/new/', data)
+        self.assertEqual(Experience.objects.count(), 0) # Doesn't add to DB
+        self.assertTemplateUsed(response, 'cv/experience_edit.html') # Redirects to same page
+    
+    def test_bad_request(self):
+        data={'title':"Test no text", 'location':"Institution 5", 'start_date':"Date 1", 'end_date':"Date 2",}
+        response = self.client.post('/cv/experience/new/', data)
+        self.assertEqual(Experience.objects.count(), 0) #Doesn't add to database
+        
+    def test_experience_deletion(self):
+        data={'title':"Test Experience 6", 'subtitle':"Experience Type 6", 'date':"Test 06", 'text':"Test 6 Detailed",}
+        self.client.post('/cv/experience/new/', data)
+        self.assertEqual(Experience.objects.count(), 1)
+        new_item = Experience.objects.first()
+        new_item.delete()
+        self.assertEqual(Experience.objects.count(), 0)
+    
+    def test_experience_deletion_url(self):
+        data={'title':"Test Experience 7", 'subtitle':"Experience Type 7", 'date':"Test 07", 'text':"Test 7 Detailed",}
+        self.client.post('/cv/experience/new/', data)
+        self.assertEqual(Experience.objects.count(), 1)
+        new_item = Experience.objects.first()
+        url = "/cv/experience/" + str(new_item.pk) + "/remove/"
+        response = self.client.get(url)
+        self.assertEqual(Experience.objects.count(), 0)
         self.assertEqual(response['location'], "/cv/")
