@@ -67,7 +67,31 @@
                 {% endfor %}
             </div>
             <hr>
-            <h3 class="section-header">Experience</h3>
+            <div id="experience-section">
+                <h3 class="section-header">Experience</h3>
+                {% if user.is_authenticated %}
+                    <a class="btn btn-outline-dark" href="{% url 'experience_new' %}" id="new-experience">New Experience</span></a>
+                {% endif %}
+                {% for item in experience %}
+                    <div class="card">
+                        <div class="card-header collapse-head collapsed" data-toggle="collapse" data-target="#collapseExperience{{item.pk}}" aria-expanded="false" aria-controls="collapseExperience{{item.pk}}" onclick="showToggle()" >
+                            <h2 class="mb-0" style="font-size: x-large; color: darkred;">
+                                <i class="fa icon-switch fa-chevron-down"></i> {{item.title}}
+                            </h2>
+                            <p>{{item.subtitle}} ({{item.date}})</p>
+                        </div>
+                        <div id="collapseExperience{{item.pk}}" class="collapse">
+                            <div class="card-body">
+                                {{item.text|linebreaksbr}}
+                                <br>
+                                {% if user.is_authenticated %}
+                                    <a class="btn btn-outline-dark delete_btn" href="{% url 'experience_remove' pk=item.pk %}">Delete</span></a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
             <hr>
             <h3 class="section-header">Interests</h3>
         </div>
