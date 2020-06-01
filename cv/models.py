@@ -33,7 +33,7 @@ class Experience(models.Model):
     def __str__(self):
         return self.title
 
-class Experience(models.Model):
+class Interest(models.Model):
 
     def __str__(self):
         return self.title
