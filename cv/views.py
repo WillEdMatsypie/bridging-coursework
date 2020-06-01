@@ -13,7 +13,8 @@ def show_cv(request):
     tech_skills = Skill.objects.filter(skill_type__exact="technical")
     other_skills = Skill.objects.filter(skill_type__exact="other")
     experience = Experience.objects.all()
-    return render(request, 'cv/cv.html', {'education': education, 'tech_skills':tech_skills, 'other_skills':other_skills, 'experience':experience})
+    interests = Interest.objects.all()
+    return render(request, 'cv/cv.html', {'education': education, 'tech_skills':tech_skills, 'other_skills':other_skills, 'experience':experience, 'interests':interests})
 
 @login_required
 def education_new(request):
