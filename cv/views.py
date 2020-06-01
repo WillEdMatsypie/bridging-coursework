@@ -72,8 +72,18 @@ def experience_remove(request, pk):
 
 @login_required
 def interest_new(request):
-    return None
+    if request.method == "POST":
+        form = InterestForm(request.POST)
+        if form.is_valid():
+            interest = form.save(commit=False)
+            interest.save()
+            return redirect('cv')
+    else:
+        form = InterestForm()
+    return render(request, 'cv/interest_edit.html', {'form': form})
 
 @login_required
 def interest_remove(request, pk):
-    return None
+    item = get_object_or_404(Interest, pk=pk)
+    item.delete()
+    return redirect('/cv/')
