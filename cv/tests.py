@@ -315,7 +315,7 @@ class ExperienceModelTest(TestCase):
         self.assertTemplateUsed(response, 'cv/experience_edit.html') # Redirects to same page
     
     def test_bad_request(self):
-        data={'title':"Test no text", 'location':"Institution 5", 'start_date':"Date 1", 'end_date':"Date 2",}
+        data={'title':"Test no text", 'location':"Institution 5", 'date':"Date 1"}
         response = self.client.post('/cv/experience/new/', data)
         self.assertEqual(Experience.objects.count(), 0) #Doesn't add to database
         
