@@ -250,7 +250,7 @@ class FunctionalTest(unittest.TestCase):
         # Notice all applicable fields
         title = self.browser.find_element_by_id("id_title")
         subtitle = self.browser.find_element_by_id("id_subtitle")
-        date = self.browser.find_element_by_id("id_start_date")
+        date = self.browser.find_element_by_id("id_date")
         detail = self.browser.find_element_by_id("id_text")
         save = self.browser.find_element_by_class_name("save")
 
