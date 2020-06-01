@@ -235,4 +235,73 @@ class FunctionalTest(unittest.TestCase):
 
         self.browser.get('http://localhost:8000/accounts/logout')
 
+    def test_experience(self):
+        # Login to edit
+        self.login()
+        self.browser.get('http://localhost:8000/cv')
+
+        # Click button for new experience
+        new_button = self.browser.find_element_by_id("new-experience")
+        new_button.click()
+
+        # Display new experience form
+        self.base_html_loads()
+
+        # Notice all applicable fields
+        title = self.browser.find_element_by_id("id_title")
+        subtitle = self.browser.find_element_by_id("id_subtitle")
+        date = self.browser.find_element_by_id("id_start_date")
+        detail = self.browser.find_element_by_id("id_text")
+        save = self.browser.find_element_by_class_name("save")
+
+        # Fill in the form
+        title.send_keys("Test Experience Title")
+        subtitle.send_keys("Test Subtitle")
+        date.send_keys("Test Date")
+        detail.send_keys("Test Detail")
+        save.click()
+
+        # Notice correct data displayed
+        experience_section = self.browser.find_element_by_id("experience-section")
+        items = experience_section.find_elements_by_class_name("card")
+        self.assertTrue(any('Test Experience Title' in item.text for item in items))
+
+        # find the specific item
+        for item in items:
+            if 'Test Experience Title' in item.text:
+                header = item.find_element_by_class_name("card-header")
+                body = item.find_element_by_class_name("collapse")
+
+        # Toggle collapse
+        self.assertTrue('collapsed' in header.get_attribute("class"))
+        self.assertTrue('show' not in body.get_attribute("class"))
+        header.click()
+        time.sleep(1)
+        self.assertTrue('collapsed' not in header.get_attribute("class"))
+        self.assertTrue('show' in body.get_attribute("class"))
+
+        # Check item has all data
+        self.assertTrue('Test Subtitle' in header.text)
+        self.assertTrue('Test Date' in header.text)
+        self.assertTrue('Test Detail' in body.text)
+
+        # Check close collapse
+        header.click()
+        time.sleep(1)
+        self.assertTrue('collapsed' in header.get_attribute("class"))
+        self.assertTrue('show' not in body.get_attribute("class"))
+
+        # Delete item
+        header.click()
+        time.sleep(1)
+        delete_btn = item.find_element_by_class_name("delete_btn")
+        delete_btn.click()
+        time.sleep(1)
+        experience_section = self.browser.find_element_by_id("experience-section")
+        items = experience_section.find_elements_by_class_name("card")
+        self.assertFalse(any('Test Experience Title' in item.text for item in items))
+
+
+        self.browser.get('http://localhost:8000/accounts/logout')
+
         # In Terminal use the command `python manage.py test functional-tests` to run these
