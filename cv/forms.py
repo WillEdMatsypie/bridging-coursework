@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Education, Skill, Experience
+from .models import Education, Skill, Experience, Interest
 
 class EducationForm(forms.ModelForm):
 
@@ -59,3 +59,8 @@ class ExperienceForm(forms.ModelForm):
             'class': 'form-control',
             'placeholder': 'Detailed Text about the Experience'})
          }
+
+class InterestForm(forms.ModelForm):
+
+    class Meta:
+        model = Interest

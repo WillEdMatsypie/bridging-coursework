@@ -3,9 +3,9 @@ from django.test import TestCase
 from django.http import HttpRequest
 from django.contrib.auth.models import User
 
-from cv.views import show_cv, education_new, skill_new, experience_new
-from cv.models import Education, Skill, Experience  
-from .forms import EducationForm, SkillForm, ExperienceForm
+from cv.views import show_cv, education_new, skill_new, experience_new, interest_new
+from cv.models import Education, Skill, Experience, Interest  
+from .forms import EducationForm, SkillForm, ExperienceForm, InterestForm
 
 class CvPageTest(TestCase):
     
@@ -335,4 +335,96 @@ class ExperienceModelTest(TestCase):
         url = "/cv/experience/" + str(new_item.pk) + "/remove/"
         response = self.client.get(url)
         self.assertEqual(Experience.objects.count(), 0)
+        self.assertEqual(response['location'], "/cv/")
+
+class InterestModelTest(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user('temporary', 'temporary@gmail.com', 'temporary')
+        self.client.login(username='temporary', password='temporary')
+
+    def tearDown(self):
+        self.client.logout()
+        self.user.delete()
+
+    def test_saving_and_retrieving_interest(self):
+        first_item = Interest()
+        first_item.title = "Test Interest 1"
+        first_item.save()
+
+        second_item = Interest()
+        second_item.title = "Test Interest 2"
+        second_item.save()
+        
+        saved_items = Interest.objects.all()
+        self.assertEqual(saved_items.count(), 2)
+
+        first_saved_item = saved_items[0]
+        second_saved_item = saved_items[1]
+        self.assertEqual(first_saved_item.title, 'Test Interest 1')
+        self.assertEqual(second_saved_item.title, 'Test Interest 2')
+
+    def test_url_resolves_to_interest_form_view(self):
+        found = resolve('/cv/interest/new/')  
+        self.assertEqual(found.func, interest_new)
+    
+    def test_uses_interest_form_template(self):
+        response = self.client.get('/cv/interest/new/')
+        self.assertTemplateUsed(response, 'cv/interest_edit.html')
+
+    def test_interest_form_returns_correct_html(self):
+        request = HttpRequest()  
+        request.user = self.user
+        response = interest_new(request)  
+        html = response.content.decode('utf8')  
+        self.assertTrue(html.strip().startswith('<html>'))  
+        self.assertIn('<title>Zenith\'s Blog</title>', html)  
+        self.assertIn('<h2>New Interest</h2>', html)
+        self.assertTrue(html.strip().endswith('</html>'))  
+    
+    def test_view_interest_form(self):
+        response = self.client.get('/cv/interest/new/')
+        self.assertIsInstance(response.context['form'], InterestForm) 
+        self.assertContains(response, 'name="title"')
+
+    def test_can_save_POST_request_to_interest_model(self):
+        data={'title':"Test Interest 3",}
+        response = self.client.post('/cv/interest/new/', data)
+        self.assertEqual(Interest.objects.count(), 1)
+        new_item = Interest.objects.first()
+        self.assertEqual(new_item.title, "Test Interest 3")
+    
+    def test_redirect_after_POST_submission(self):
+        data={'title':"Test Interest 4",}
+        response = self.client.post('/cv/interest/new/', data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], "/cv/")
+    
+    def test_error_response_on_incomplete_form(self):
+        data={'title':"",}
+        response = self.client.post('/cv/interest/new/', data)
+        self.assertEqual(Interest.objects.count(), 0) # Doesn't add to DB
+        self.assertTemplateUsed(response, 'cv/interest_edit.html') # Redirects to same page
+    
+    def test_bad_request(self):
+        data={}
+        response = self.client.post('/cv/interest/new/', data)
+        self.assertEqual(Interest.objects.count(), 0) #Doesn't add to database
+        
+    def test_interest_deletion(self):
+        data={'title':"Test Interest 6",}
+        self.client.post('/cv/interest/new/', data)
+        self.assertEqual(Interest.objects.count(), 1)
+        new_item = Interest.objects.first()
+        new_item.delete()
+        self.assertEqual(Interest.objects.count(), 0)
+    
+    def test_interest_deletion_url(self):
+        data={'title':"Test Interest 7",}
+        self.client.post('/cv/interest/new/', data)
+        self.assertEqual(Interest.objects.count(), 1)
+        new_item = Interest.objects.first()
+        url = "/cv/interest/" + str(new_item.pk) + "/remove/"
+        response = self.client.get(url)
+        self.assertEqual(Interest.objects.count(), 0)
         self.assertEqual(response['location'], "/cv/")

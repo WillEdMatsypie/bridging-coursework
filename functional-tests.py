@@ -304,4 +304,46 @@ class FunctionalTest(unittest.TestCase):
 
         self.browser.get('http://localhost:8000/accounts/logout')
 
+    
+    def test_interests(self):
+        # Login to edit
+        self.login()
+        self.browser.get('http://localhost:8000/cv')
+
+        # Click button for new interest
+        new_button = self.browser.find_element_by_id("new-interest")
+        new_button.click()
+
+        # Display new interest form
+        self.base_html_loads()
+
+        # Notice all applicable fields
+        title = self.browser.find_element_by_id("id_title")
+        save = self.browser.find_element_by_class_name("save")
+
+        # Fill in the form
+        title.send_keys("Test Interest")
+        save.click()
+
+        # Notice the tables
+        tech_table = self.browser.find_element_by_id("interest-table")
+
+        # Check item is displayed and other item is not
+        items = tech_table.find_elements_by_class_name("interest-item")
+        self.assertTrue(any(item.text == 'Test Interest' for item in items))
+        
+        # find the specific item
+        for item in items:
+            if 'Test Interest' in item.text:
+                interest = item
+
+        # Delete interest
+        delete_btn = interest.find_element_by_class_name("delete_btn")
+        delete_btn.click()
+        time.sleep(1)
+        tech_table = self.browser.find_element_by_id("interest-table")
+        items = tech_table.find_elements_by_class_name("interest-item")
+        self.assertFalse(any(item.text == 'Test Interest' for item in items))
+
+        self.browser.get('http://localhost:8000/accounts/logout')
         # In Terminal use the command `python manage.py test functional-tests` to run these

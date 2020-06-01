@@ -2,8 +2,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
 
 from django.contrib.auth.decorators import login_required
-from .models import Education, Skill, Experience
-from .forms import EducationForm, SkillForm, ExperienceForm
+from .models import Education, Skill, Experience, Interest
+from .forms import EducationForm, SkillForm, ExperienceForm, InterestForm
 
 
 # Create your views here.
@@ -69,3 +69,11 @@ def experience_remove(request, pk):
     item = get_object_or_404(Experience, pk=pk)
     item.delete()
     return redirect('/cv/')
+
+@login_required
+def interest_new(request):
+    return None
+
+@login_required
+def interest_remove(request, pk):
+    return None
