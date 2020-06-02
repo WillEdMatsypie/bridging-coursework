@@ -315,6 +315,105 @@ class FunctionalTest(unittest.TestCase):
 
         self.browser.get('http://localhost:8000/accounts/logout')
 
+    def test_education_edit(self):
+        # Login to edit
+        self.login()
+        self.browser.get('http://localhost:8000/cv')
+
+        # Click button for new education
+        new_button = self.browser.find_element_by_id("new-education")
+        new_button.click()
+
+        # Display new education form
+        self.base_html_loads()
+
+        # Notice all applicable fields
+        title = self.browser.find_element_by_id("id_title")
+        location = self.browser.find_element_by_id("id_location")
+        start_date = self.browser.find_element_by_id("id_start_date")
+        end_date = self.browser.find_element_by_id("id_end_date")
+        brief = self.browser.find_element_by_id("id_brief_text")
+        detail = self.browser.find_element_by_id("id_detailed_text")
+        save = self.browser.find_element_by_class_name("save")
+
+        # Fill in the form
+        title.send_keys("Test Education Title 2")
+        location.send_keys("Test Location 2")
+        start_date.send_keys("Test Start Date 2")
+        end_date.send_keys("Test End Date")
+        brief.send_keys("Test Brief 2")
+        detail.send_keys("Test Detail 2")
+        save.click()
+
+        # Notice correct data displayed
+        education_section = self.browser.find_element_by_id("education-section")
+        items = education_section.find_elements_by_class_name("card")
+        self.assertTrue(any('Test Education Title 2' in item.text for item in items))
+
+        # find the specific item
+        for item in items:
+            if 'Test Education Title 2' in item.text:
+                header = item.find_element_by_class_name("card-header")
+                body = item.find_element_by_class_name("collapse")
+        
+        # See edit button
+        header.click()
+        time.sleep(1)
+        edit_btn = body.find_element_by_class_name("edit_btn")
+        edit_btn.click()
+
+        # Display edit skill form
+        self.base_html_loads()
+
+        # Notice all applicable fields
+        title = self.browser.find_element_by_id("id_title")
+        location = self.browser.find_element_by_id("id_location")
+        start_date = self.browser.find_element_by_id("id_start_date")
+        end_date = self.browser.find_element_by_id("id_end_date")
+        brief = self.browser.find_element_by_id("id_brief_text")
+        detail = self.browser.find_element_by_id("id_detailed_text")
+        save = self.browser.find_element_by_class_name("save")
+
+        # Fill in the form
+        title.clear()
+        title.send_keys(" EDIT")
+        end_date.send_keys(" Edited")
+        detail.send_keys(" EDITED TEXT")
+        save.click()
+
+                # Notice correct data displayed
+        education_section = self.browser.find_element_by_id("education-section")
+        items = education_section.find_elements_by_class_name("card")
+        self.assertFalse(any('Test Education Title 2' in item.text for item in items))
+        self.assertTrue(any('Test Education Title EDIT' in item.text for item in items))
+
+        # find the specific item
+        for item in items:
+            if 'Test Education Title EDIT' in item.text:
+                header = item.find_element_by_class_name("card-header")
+                body = item.find_element_by_class_name("collapse")
+
+        # Toggle collapse
+        header.click()
+        time.sleep(1)
+
+        # Check item has all data
+        self.assertTrue('Test Location 2' in header.text)
+        self.assertTrue('Test Start Date 2' in header.text)
+        self.assertTrue('Test End Date 2 Edited' in header.text)
+        self.assertTrue('Test Brief 2' in header.text)
+        self.assertTrue('Test Detail 2 EDITED TEXT' in body.text)
+
+        # Delete item
+        delete_btn = item.find_element_by_class_name("delete_btn")
+        delete_btn.click()
+        time.sleep(1)
+        education_section = self.browser.find_element_by_id("education-section")
+        items = education_section.find_elements_by_class_name("card")
+        self.assertFalse(any('Test Education Title EDIT' in item.text for item in items))
+
+        self.browser.get('http://localhost:8000/accounts/logout')
+
     def test_experience(self):
         # Login to edit
         self.login()
@@ -383,7 +482,96 @@ class FunctionalTest(unittest.TestCase):
 
 
         self.browser.get('http://localhost:8000/accounts/logout')
+    
+        def test_experience_edit(self):
+        # Login to edit
+        self.login()
+        self.browser.get('http://localhost:8000/cv')
 
+        # Click button for new experience
+        new_button = self.browser.find_element_by_id("new-experience")
+        new_button.click()
+
+        # Display new experience form
+        self.base_html_loads()
+
+        # Notice all applicable fields
+        title = self.browser.find_element_by_id("id_title")
+        subtitle = self.browser.find_element_by_id("id_subtitle")
+        date = self.browser.find_element_by_id("id_date")
+        detail = self.browser.find_element_by_id("id_text")
+        save = self.browser.find_element_by_class_name("save")
+
+        # Fill in the form
+        title.send_keys("Test Experience Title 2")
+        subtitle.send_keys("Test Subtitle 2")
+        date.send_keys("Test Date 2")
+        detail.send_keys("Test Detail 2")
+        save.click()
+
+        # Notice correct data displayed
+        experience_section = self.browser.find_element_by_id("experience-section")
+        items = experience_section.find_elements_by_class_name("card")
+        self.assertTrue(any('Test Experience Title 2' in item.text for item in items))
+
+        # find the specific item
+        for item in items:
+            if 'Test Experience Title 2' in item.text:
+                header = item.find_element_by_class_name("card-header")
+                body = item.find_element_by_class_name("collapse")
+        
+        # See edit button
+        header.click()
+        time.sleep(1)
+        edit_btn = body.find_element_by_class_name("edit_btn")
+        edit_btn.click()
+
+        # Display edit experience form
+        self.base_html_loads()
+
+        # Notice all applicable fields
+        title = self.browser.find_element_by_id("id_title")
+        subtitle = self.browser.find_element_by_id("id_subtitle")
+        date = self.browser.find_element_by_id("id_date")
+        detail = self.browser.find_element_by_id("id_text")
+        save = self.browser.find_element_by_class_name("save")
+
+        # Fill in the form
+        title.clear()
+        title.send_keys("Test Experience Title EDIT")
+        detail.send_keys(" EDITED")
+        save.click()
+
+        # Notice correct data displayed
+        experience_section = self.browser.find_element_by_id("experience-section")
+        items = experience_section.find_elements_by_class_name("card")
+        self.assertFalse(any('Test Experience Title 2' in item.text for item in items))
+        self.assertTrue(any('Test Experience Title EDIT' in item.text for item in items))
+
+        # find the specific item
+        for item in items:
+            if 'Test Experience Title EDIT' in item.text:
+                header = item.find_element_by_class_name("card-header")
+                body = item.find_element_by_class_name("collapse")
+
+        # Toggle collapse
+        header.click()
+        time.sleep(1)
+
+        # Check edited content
+        self.assertTrue('Test Subtitle' in header.text)
+        self.assertTrue('Test Date' in header.text)
+        self.assertTrue('Test Detail EDITED' in body.text)
+
+        # Delete item
+        delete_btn = item.find_element_by_class_name("delete_btn")
+        delete_btn.click()
+        time.sleep(1)
+        experience_section = self.browser.find_element_by_id("experience-section")
+        items = experience_section.find_elements_by_class_name("card")
+        self.assertFalse(any('Test Experience Title EDIT' in item.text for item in items))
+
+        self.browser.get('http://localhost:8000/accounts/logout')
     
     def test_interests(self):
         # Login to edit
@@ -424,6 +612,74 @@ class FunctionalTest(unittest.TestCase):
         tech_table = self.browser.find_element_by_id("interest-table")
         items = tech_table.find_elements_by_class_name("interest-item")
         self.assertFalse(any(item.text == 'Test Interest' for item in items))
+
+        self.browser.get('http://localhost:8000/accounts/logout')
+
+    def test_interest_edit(self):
+        # Login to edit
+        self.login()
+        self.browser.get('http://localhost:8000/cv')
+
+        # Click button for new interest
+        new_button = self.browser.find_element_by_id("new-interest")
+        new_button.click()
+
+        # Display new interest form
+        self.base_html_loads()
+
+        # Notice all applicable fields
+        title = self.browser.find_element_by_id("id_title")
+        save = self.browser.find_element_by_class_name("save")
+
+        # Fill in the form
+        title.send_keys("Test Interest 2")
+        save.click()
+
+        # Notice the tables
+        tech_table = self.browser.find_element_by_id("interest-table")
+
+        # Check item is displayed
+        items = tech_table.find_elements_by_class_name("interest-item")
+        self.assertTrue(any(item.text == 'Test Interest 2' for item in items))
+        
+        # find the specific item
+        for item in items:
+            if 'Test Interest 2' in item.text:
+                interest = item
+        
+        # See edit button
+        edit_btn = interest.find_element_by_class_name("edit_btn")
+        edit_btn.click()
+
+        # Display edit skill form
+        self.base_html_loads()
+
+        # Notice all applicable fields
+        title = self.browser.find_element_by_id("id_title")
+        save = self.browser.find_element_by_class_name("save")
+
+        # Fill in the form
+        title.clear()
+        title.send_keys("Test Interest EDIT")
+        save.click()
+
+        # Check item is displayed and other item is not
+        items = tech_table.find_elements_by_class_name("interest-item")
+        self.assertFalse(any(item.text == 'Test Interest 2' for item in items))
+        self.assertTrue(any(item.text == 'Test Interest EDIT' for item in items))
+        
+        # find the specific item
+        for item in items:
+            if 'Test Interest EDIT' in item.text:
+                interest = item
+
+        # Delete interest
+        delete_btn = interest.find_element_by_class_name("delete_btn")
+        delete_btn.click()
+        time.sleep(1)
+        tech_table = self.browser.find_element_by_id("interest-table")
+        items = tech_table.find_elements_by_class_name("interest-item")
+        self.assertFalse(any(item.text == 'Test Interest EDIT' for item in items))
 
         self.browser.get('http://localhost:8000/accounts/logout')
         # In Terminal use the command `python manage.py test functional-tests` to run these
