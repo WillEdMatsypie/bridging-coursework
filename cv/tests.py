@@ -132,7 +132,7 @@ class SkillModelTest(TestCase):
     def test_skill_edit(self):
         data={'title':"Skill 8", 'skill_type':"other",}
         url = self.setup_edit(data)
-        data={'title':"Skill 80", 'skill_type':"technical",}
+        data2={'title':"Skill 80", 'skill_type':"technical",}
         response = self.client.post(url, data2)
         self.assertEqual(Skill.objects.count(), 1)
         self.assertEqual(response['location'], "/cv/")
@@ -144,9 +144,8 @@ class SkillModelTest(TestCase):
         data={'title':"Skill 9", 'skill_type':"other",}
         url = "/cv/skill/" + str(1) + "/edit/"
         response = self.client.post(url, data)
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 404)
         self.assertEqual(Skill.objects.count(), 0)
-        self.assertEqual(response['location'], "/cv/")
     
     def test_url_resolves_to_skill_form_edit_view(self):
         data={'title':"Skill 10", 'skill_type':"technical",}

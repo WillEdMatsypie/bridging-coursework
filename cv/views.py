@@ -48,8 +48,17 @@ def skill_new(request):
     return render(request, 'cv/skill_edit.html', {'form': form})
 
 @login_required
-def skill_edit(request):
-    return None
+def skill_edit(request, pk):
+    skill = get_object_or_404(Skill, pk=pk)
+    if request.method == "POST":
+        form = SkillForm(request.POST, instance=skill)
+        if form.is_valid():
+            skill = form.save(commit=False)
+            skill.save()
+            return redirect('cv')
+    else:
+        form = SkillForm()
+    return render(request, 'cv/skill_edit.html', {'form': form})
 
 @login_required
 def skill_remove(request, pk):
