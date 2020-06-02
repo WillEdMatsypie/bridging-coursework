@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.http import HttpRequest
 from django.contrib.auth.models import User
 
-from cv.views import show_cv, education_new, skill_new, experience_new, interest_new
+from cv.views import show_cv, education_new, skill_new, skill_edit, experience_new, interest_new
 from cv.models import Education, Skill, Experience, Interest  
 from .forms import EducationForm, SkillForm, ExperienceForm, InterestForm
 
@@ -122,6 +122,51 @@ class SkillModelTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(Skill.objects.count(), 0)
         self.assertEqual(response['location'], "/cv/")
+
+    def setup_edit(self, data):
+        self.client.post('/cv/skill/new/', data)
+        self.assertEqual(Skill.objects.count(), 1)
+        new_item = Skill.objects.first()
+        return "/cv/skill/" + str(new_item.pk) + "/edit/"
+
+    def test_skill_edit(self):
+        data={'title':"Skill 8", 'skill_type':"other",}
+        url = self.setup_edit(data)
+        data={'title':"Skill 80", 'skill_type':"technical",}
+        response = self.client.post(url, data2)
+        self.assertEqual(Skill.objects.count(), 1)
+        self.assertEqual(response['location'], "/cv/")
+        edited_item = Skill.objects.first()
+        self.assertEqual(edited_item.title, "Skill 80")
+        self.assertEqual(edited_item.skill_type, "technical")
+    
+    def test_skill_edit_404(self):
+        data={'title':"Skill 9", 'skill_type':"other",}
+        url = "/cv/skill/" + str(1) + "/edit/"
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Skill.objects.count(), 0)
+        self.assertEqual(response['location'], "/cv/")
+    
+    def test_url_resolves_to_skill_form_edit_view(self):
+        data={'title':"Skill 10", 'skill_type':"technical",}
+        url = self.setup_edit(data)
+        found = resolve(url)  
+        self.assertEqual(found.func, skill_edit)
+    
+    def test_uses_skill_form_edit_template(self):
+        data={'title':"Skill 11", 'skill_type':"technical",}
+        url = self.setup_edit(data)
+        response = self.client.get(url)
+        self.assertTemplateUsed(response, 'cv/skill_edit.html')
+    
+    def test_view_skill_edit_form(self):
+        data={'title':"Skill 12", 'skill_type':"technical",}
+        url = self.setup_edit(data)
+        response = self.client.get(url)
+        self.assertIsInstance(response.context['form'], SkillForm) 
+        self.assertContains(response, 'name="title"')
+        self.assertContains(response, 'name="skill_type')
 
 class EducationModelTest(TestCase):
 

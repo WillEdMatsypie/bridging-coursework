@@ -48,6 +48,10 @@ def skill_new(request):
     return render(request, 'cv/skill_edit.html', {'form': form})
 
 @login_required
+def skill_edit(request):
+    return None
+
+@login_required
 def skill_remove(request, pk):
     item = get_object_or_404(Skill, pk=pk)
     item.delete()
