@@ -3,7 +3,7 @@ from django.test import TestCase
 from django.http import HttpRequest
 from django.contrib.auth.models import User
 
-from cv.views import show_cv, education_new, skill_new, skill_edit, experience_new, interest_new
+from cv.views import show_cv, education_new, education_edit, skill_new, skill_edit, experience_new, experience_edit, interest_new, interest_edit
 from cv.models import Education, Skill, Experience, Interest  
 from .forms import EducationForm, SkillForm, ExperienceForm, InterestForm
 
@@ -277,6 +277,55 @@ class EducationModelTest(TestCase):
         self.assertEqual(Education.objects.count(), 0)
         self.assertEqual(response['location'], "/cv/")
 
+        def setup_edit(self, data):
+        self.client.post('/cv/education/new/', data)
+        self.assertEqual(Education.objects.count(), 1)
+        new_item = Education.objects.first()
+        return "/cv/education/" + str(new_item.pk) + "/edit/"
+
+    def test_education_edit(self):
+        data={'title':"Test Education 8", 'location':"Institution 8", 'start_date':"Test 08", 'end_date':"Test 80", 'brief_text':"Test 8 Brief", 'detailed_text':"Test 8 Detailed",}
+        url = self.setup_edit(data)
+        data2={'title':"Test Education 8", 'location':"Institution 80", 'start_date':"Test 08", 'end_date':"Test 80", 'brief_text':"Test 8 Brief", 'detailed_text':"Test 808 Detailed",}
+        response = self.client.post(url, data2)
+        self.assertEqual(Education.objects.count(), 1)
+        self.assertEqual(response['location'], "/cv/")
+        edited_item = Education.objects.first()
+        self.assertEqual(edited_item.title, "Test Education 8")
+        self.assertEqual(edited_item.title, "Institution 80")
+        self.assertEqual(edited_item.detailed_text, "Test 808 Detailed")
+    
+    def test_education_edit_404(self):
+        data={'title':"Test Education 9", 'location':"Institution 9", 'start_date':"Test 09", 'end_date':"Test 90", 'brief_text':"Test 9 Brief", 'detailed_text':"Test 9 Detailed",}
+        url = "/cv/education/" + str(1) + "/edit/"
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(Education.objects.count(), 0)
+    
+    def test_url_resolves_to_education_form_edit_view(self):
+        data={'title':"Test Education 10", 'location':"Institution 10", 'start_date':"Test 010", 'end_date':"Test 100", 'brief_text':"Test 10 Brief", 'detailed_text':"Test 10 Detailed",}
+        url = self.setup_edit(data)
+        found = resolve(url)  
+        self.assertEqual(found.func, education_edit)
+    
+    def test_uses_education_form_edit_template(self):
+        data={'title':"Test Education 11", 'location':"Institution 11", 'start_date':"Test 011", 'end_date':"Test 110", 'brief_text':"Test 11 Brief", 'detailed_text':"Test 11 Detailed",}
+        url = self.setup_edit(data)
+        response = self.client.get(url)
+        self.assertTemplateUsed(response, 'cv/education_edit.html')
+    
+    def test_view_education_edit_form(self):
+        data={'title':"Test Education 12", 'location':"Institution 12", 'start_date':"Test 012", 'end_date':"Test 120", 'brief_text':"Test 12 Brief", 'detailed_text':"Test 12 Detailed",}
+        url = self.setup_edit(data)
+        response = self.client.get(url)
+        self.assertIsInstance(response.context['form'], EducationForm) 
+        self.assertContains(response, 'name="title"')
+        self.assertContains(response, 'name="location"')
+        self.assertContains(response, 'name="start_date"')
+        self.assertContains(response, 'name="end_date"')
+        self.assertContains(response, 'name="brief_text"')
+        self.assertContains(response, 'name="detailed_text"')
+
 class ExperienceModelTest(TestCase):
 
     def setUp(self):
@@ -381,6 +430,53 @@ class ExperienceModelTest(TestCase):
         self.assertEqual(Experience.objects.count(), 0)
         self.assertEqual(response['location'], "/cv/")
 
+    def setup_edit(self, data):
+        self.client.post('/cv/experience/new/', data)
+        self.assertEqual(Experience.objects.count(), 1)
+        new_item = Experience.objects.first()
+        return "/cv/experience/" + str(new_item.pk) + "/edit/"
+
+    def test_experience_edit(self):
+        data={'title':"Test Experience 8", 'subtitle':"Experience Type 8", 'date':"Test 08", 'text':"Test 8 Detailed",}
+        url = self.setup_edit(data)
+        data2={'title':"Test Experience 8", 'subtitle':"Experience Type 80", 'date':"Test 08", 'text':"Test 80 Detailed",}
+        response = self.client.post(url, data2)
+        self.assertEqual(Experience.objects.count(), 1)
+        self.assertEqual(response['location'], "/cv/")
+        edited_item = Experience.objects.first()
+        self.assertEqual(edited_item.title, "Test Experience 8")
+        self.assertEqual(edited_item.subtitle, "Experience Type 80")
+        self.assertEqual(edited_item.text, "Test 80 Detailed")
+    
+    def test_experience_edit_404(self):
+        data={'title':"Test Experience 9", 'subtitle':"Experience Type 9", 'date':"Test 09", 'text':"Test 9 Detailed",}
+        url = "/cv/experience/" + str(1) + "/edit/"
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(Experience.objects.count(), 0)
+    
+    def test_url_resolves_to_experience_form_edit_view(self):
+        data={'title':"Test Experience 10", 'subtitle':"Experience Type 10", 'date':"Test 010", 'text':"Test 10 Detailed",}
+        url = self.setup_edit(data)
+        found = resolve(url)  
+        self.assertEqual(found.func, experience_edit)
+    
+    def test_uses_experience_form_edit_template(self):
+        data={'title':"Test Experience 11", 'subtitle':"Experience Type 11", 'date':"Test 011", 'text':"Test 11 Detailed",}
+        url = self.setup_edit(data)
+        response = self.client.get(url)
+        self.assertTemplateUsed(response, 'cv/experience_edit.html')
+    
+    def test_view_experience_edit_form(self):
+        data={'title':"Test Experience 12", 'subtitle':"Experience Type 12", 'date':"Test 012", 'text':"Test 12 Detailed",}
+        url = self.setup_edit(data)
+        response = self.client.get(url)
+        self.assertIsInstance(response.context['form'], ExperienceForm) 
+        self.assertContains(response, 'name="title"')
+        self.assertContains(response, 'name="subtitle"')
+        self.assertContains(response, 'name="date"')
+        self.assertContains(response, 'name="text"')
+
 class InterestModelTest(TestCase):
 
     def setUp(self):
@@ -472,3 +568,45 @@ class InterestModelTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(Interest.objects.count(), 0)
         self.assertEqual(response['location'], "/cv/")
+    
+    def setup_edit(self, data):
+        self.client.post('/cv/interest/new/', data)
+        self.assertEqual(Interest.objects.count(), 1)
+        new_item = Interest.objects.first()
+        return "/cv/interest/" + str(new_item.pk) + "/edit/"
+
+    def test_interest_edit(self):
+        data={'title':"Test Interest 8",}
+        url = self.setup_edit(data)
+        data2={'title':"Test Interest 80",}
+        response = self.client.post(url, data2)
+        self.assertEqual(Interest.objects.count(), 1)
+        self.assertEqual(response['location'], "/cv/")
+        edited_item = Interest.objects.first()
+        self.assertEqual(edited_item.title, "Test Interest 80")
+    
+    def test_interest_edit_404(self):
+        data={'title':"Test Interest 9",}
+        url = "/cv/interest/" + str(1) + "/edit/"
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(Interest.objects.count(), 0)
+    
+    def test_url_resolves_to_interest_form_edit_view(self):
+        data={'title':"Test Interest 11",}
+        url = self.setup_edit(data)
+        found = resolve(url)  
+        self.assertEqual(found.func, interest_edit)
+    
+    def test_uses_interest_form_edit_template(self):
+        data={'title':"Test Interest 12",}
+        url = self.setup_edit(data)
+        response = self.client.get(url)
+        self.assertTemplateUsed(response, 'cv/interest_edit.html')
+    
+    def test_view_interest_edit_form(self):
+        data={'title':"Test Interest 13",}
+        url = self.setup_edit(data)
+        response = self.client.get(url)
+        self.assertIsInstance(response.context['form'], InterestForm) 
+        self.assertContains(response, 'name="title"')
