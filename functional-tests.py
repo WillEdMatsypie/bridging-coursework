@@ -207,7 +207,7 @@ class FunctionalTest(unittest.TestCase):
         save = self.browser.find_element_by_class_name("save")
 
         # Fill in the form
-        title.send_keys("Skill Other 2")
+        title.send_keys(" Other")
         skill_type.select_by_visible_text("OTHER")
         save.click()
 
@@ -217,15 +217,15 @@ class FunctionalTest(unittest.TestCase):
 
         # Check item is displayed and is not in tech table
         items = tech_table.find_elements_by_class_name("skill-item")
-        items2 = tech_table.find_elements_by_class_name("skill-item")
+        items2 = other_table.find_elements_by_class_name("skill-item")
         self.assertFalse(any(item.text == 'Skill Tech 2' for item in items))
-        self.assertFalse(any(item.text == 'Skill Other 2' for item in items))
+        self.assertFalse(any(item.text == 'Skill Tech 2 Other' for item in items))
         self.assertFalse(any(item.text == 'Skill Tech 2' for item in items2))
-        self.assertTrue(any(item.text == 'Skill Other 2' for item in items2))
+        self.assertTrue(any(item.text == 'Skill Tech 2 Other' for item in items2))
 
         # Delete item
         for item in items2:
-            if 'Skill Other 2' in item.text:
+            if 'Skill Tech 2 Other' in item.text:
                 other_skill = item
 
         delete_btn = other_skill.find_element_by_class_name("delete_btn")
@@ -235,7 +235,7 @@ class FunctionalTest(unittest.TestCase):
         other_table = self.browser.find_element_by_id("other-skill-table")
 
         items = other_table.find_elements_by_class_name("skill-item")
-        self.assertFalse(any(item.text == 'Skill Other 2' for item in items))
+        self.assertFalse(any(item.text == 'Skill Tech 2 Other' for item in items))
 
         self.browser.get('http://localhost:8000/accounts/logout')
 

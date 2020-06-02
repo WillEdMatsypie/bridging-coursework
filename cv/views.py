@@ -57,7 +57,7 @@ def skill_edit(request, pk):
             skill.save()
             return redirect('cv')
     else:
-        form = SkillForm()
+        form = SkillForm(instance=skill)
     return render(request, 'cv/skill_edit.html', {'form': form})
 
 @login_required
