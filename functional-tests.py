@@ -262,22 +262,22 @@ class FunctionalTest(unittest.TestCase):
         save = self.browser.find_element_by_class_name("save")
 
         # Fill in the form
-        title.send_keys("Test Education Title")
-        location.send_keys("Test Location")
-        start_date.send_keys("Test Start Date")
-        end_date.send_keys("Test End Date")
-        brief.send_keys("Test Brief")
-        detail.send_keys("Test Detail")
+        title.send_keys("Test Education Title 1")
+        location.send_keys("Test Location 1")
+        start_date.send_keys("Test Start Date 1")
+        end_date.send_keys("Test End Date 1")
+        brief.send_keys("Test Brief 1")
+        detail.send_keys("Test Detail 1")
         save.click()
 
         # Notice correct data displayed
         education_section = self.browser.find_element_by_id("education-section")
         items = education_section.find_elements_by_class_name("card")
-        self.assertTrue(any('Test Education Title' in item.text for item in items))
+        self.assertTrue(any('Test Education Title 1' in item.text for item in items))
 
         # find the specific item
         for item in items:
-            if 'Test Education Title' in item.text:
+            if 'Test Education Title 1' in item.text:
                 header = item.find_element_by_class_name("card-header")
                 body = item.find_element_by_class_name("collapse")
 
@@ -290,11 +290,11 @@ class FunctionalTest(unittest.TestCase):
         self.assertTrue('show' in body.get_attribute("class"))
 
         # Check item has all data
-        self.assertTrue('Test Location' in header.text)
-        self.assertTrue('Test Start Date' in header.text)
-        self.assertTrue('Test End Date' in header.text)
-        self.assertTrue('Test Brief' in header.text)
-        self.assertTrue('Test Detail' in body.text)
+        self.assertTrue('Test Location 1' in header.text)
+        self.assertTrue('Test Start Date 1' in header.text)
+        self.assertTrue('Test End Date 1' in header.text)
+        self.assertTrue('Test Brief 1' in header.text)
+        self.assertTrue('Test Detail 1' in body.text)
 
         # Check close collapse
         header.click()
@@ -310,7 +310,7 @@ class FunctionalTest(unittest.TestCase):
         time.sleep(1)
         education_section = self.browser.find_element_by_id("education-section")
         items = education_section.find_elements_by_class_name("card")
-        self.assertFalse(any('Test Education Title' in item.text for item in items))
+        self.assertFalse(any('Test Education Title 1' in item.text for item in items))
 
 
         self.browser.get('http://localhost:8000/accounts/logout')
@@ -340,7 +340,7 @@ class FunctionalTest(unittest.TestCase):
         title.send_keys("Test Education Title 2")
         location.send_keys("Test Location 2")
         start_date.send_keys("Test Start Date 2")
-        end_date.send_keys("Test End Date")
+        end_date.send_keys("Test End Date 2")
         brief.send_keys("Test Brief 2")
         detail.send_keys("Test Detail 2")
         save.click()
@@ -376,8 +376,8 @@ class FunctionalTest(unittest.TestCase):
 
         # Fill in the form
         title.clear()
-        title.send_keys(" EDIT")
-        end_date.send_keys(" Edited")
+        title.send_keys("Test Education Title EDIT")
+        end_date.send_keys(" Edit")
         detail.send_keys(" EDITED TEXT")
         save.click()
 
@@ -400,7 +400,7 @@ class FunctionalTest(unittest.TestCase):
         # Check item has all data
         self.assertTrue('Test Location 2' in header.text)
         self.assertTrue('Test Start Date 2' in header.text)
-        self.assertTrue('Test End Date 2 Edited' in header.text)
+        self.assertTrue('Test End Date 2 Edit' in header.text)
         self.assertTrue('Test Brief 2' in header.text)
         self.assertTrue('Test Detail 2 EDITED TEXT' in body.text)
 
@@ -434,20 +434,20 @@ class FunctionalTest(unittest.TestCase):
         save = self.browser.find_element_by_class_name("save")
 
         # Fill in the form
-        title.send_keys("Test Experience Title")
-        subtitle.send_keys("Test Subtitle")
-        date.send_keys("Test Date")
-        detail.send_keys("Test Detail")
+        title.send_keys("Test Experience Title 1")
+        subtitle.send_keys("Test Subtitle 1")
+        date.send_keys("Test Date 1")
+        detail.send_keys("Test Detail 1")
         save.click()
 
         # Notice correct data displayed
         experience_section = self.browser.find_element_by_id("experience-section")
         items = experience_section.find_elements_by_class_name("card")
-        self.assertTrue(any('Test Experience Title' in item.text for item in items))
+        self.assertTrue(any('Test Experience Title 1' in item.text for item in items))
 
         # find the specific item
         for item in items:
-            if 'Test Experience Title' in item.text:
+            if 'Test Experience Title 1' in item.text:
                 header = item.find_element_by_class_name("card-header")
                 body = item.find_element_by_class_name("collapse")
 
@@ -460,9 +460,9 @@ class FunctionalTest(unittest.TestCase):
         self.assertTrue('show' in body.get_attribute("class"))
 
         # Check item has all data
-        self.assertTrue('Test Subtitle' in header.text)
-        self.assertTrue('Test Date' in header.text)
-        self.assertTrue('Test Detail' in body.text)
+        self.assertTrue('Test Subtitle 1' in header.text)
+        self.assertTrue('Test Date 1' in header.text)
+        self.assertTrue('Test Detail 1' in body.text)
 
         # Check close collapse
         header.click()
@@ -478,12 +478,12 @@ class FunctionalTest(unittest.TestCase):
         time.sleep(1)
         experience_section = self.browser.find_element_by_id("experience-section")
         items = experience_section.find_elements_by_class_name("card")
-        self.assertFalse(any('Test Experience Title' in item.text for item in items))
+        self.assertFalse(any('Test Experience Title 1' in item.text for item in items))
 
 
         self.browser.get('http://localhost:8000/accounts/logout')
     
-        def test_experience_edit(self):
+    def test_experience_edit(self):
         # Login to edit
         self.login()
         self.browser.get('http://localhost:8000/cv')
@@ -559,9 +559,9 @@ class FunctionalTest(unittest.TestCase):
         time.sleep(1)
 
         # Check edited content
-        self.assertTrue('Test Subtitle' in header.text)
-        self.assertTrue('Test Date' in header.text)
-        self.assertTrue('Test Detail EDITED' in body.text)
+        self.assertTrue('Test Subtitle 2' in header.text)
+        self.assertTrue('Test Date 2' in header.text)
+        self.assertTrue('Test Detail 2 EDITED' in body.text)
 
         # Delete item
         delete_btn = item.find_element_by_class_name("delete_btn")
@@ -590,27 +590,27 @@ class FunctionalTest(unittest.TestCase):
         save = self.browser.find_element_by_class_name("save")
 
         # Fill in the form
-        title.send_keys("Test Interest")
+        title.send_keys("Test Interest 1")
         save.click()
 
         # Notice the tables
-        tech_table = self.browser.find_element_by_id("interest-table")
+        interest_table = self.browser.find_element_by_id("interest-table")
 
         # Check item is displayed and other item is not
-        items = tech_table.find_elements_by_class_name("interest-item")
-        self.assertTrue(any(item.text == 'Test Interest' for item in items))
+        items = interest_table.find_elements_by_class_name("interest-item")
+        self.assertTrue(any(item.text == 'Test Interest 1' for item in items))
         
         # find the specific item
         for item in items:
-            if 'Test Interest' in item.text:
+            if 'Test Interest 1' in item.text:
                 interest = item
 
         # Delete interest
         delete_btn = interest.find_element_by_class_name("delete_btn")
         delete_btn.click()
         time.sleep(1)
-        tech_table = self.browser.find_element_by_id("interest-table")
-        items = tech_table.find_elements_by_class_name("interest-item")
+        interest_table = self.browser.find_element_by_id("interest-table")
+        items = interest_table.find_elements_by_class_name("interest-item")
         self.assertFalse(any(item.text == 'Test Interest' for item in items))
 
         self.browser.get('http://localhost:8000/accounts/logout')
@@ -636,10 +636,10 @@ class FunctionalTest(unittest.TestCase):
         save.click()
 
         # Notice the tables
-        tech_table = self.browser.find_element_by_id("interest-table")
+        interest_table = self.browser.find_element_by_id("interest-table")
 
         # Check item is displayed
-        items = tech_table.find_elements_by_class_name("interest-item")
+        items = interest_table.find_elements_by_class_name("interest-item")
         self.assertTrue(any(item.text == 'Test Interest 2' for item in items))
         
         # find the specific item
@@ -663,8 +663,10 @@ class FunctionalTest(unittest.TestCase):
         title.send_keys("Test Interest EDIT")
         save.click()
 
+        interest_table = self.browser.find_element_by_id("interest-table")
+
         # Check item is displayed and other item is not
-        items = tech_table.find_elements_by_class_name("interest-item")
+        items = interest_table.find_elements_by_class_name("interest-item")
         self.assertFalse(any(item.text == 'Test Interest 2' for item in items))
         self.assertTrue(any(item.text == 'Test Interest EDIT' for item in items))
         
@@ -677,8 +679,8 @@ class FunctionalTest(unittest.TestCase):
         delete_btn = interest.find_element_by_class_name("delete_btn")
         delete_btn.click()
         time.sleep(1)
-        tech_table = self.browser.find_element_by_id("interest-table")
-        items = tech_table.find_elements_by_class_name("interest-item")
+        interest_table = self.browser.find_element_by_id("interest-table")
+        items = interest_table.find_elements_by_class_name("interest-item")
         self.assertFalse(any(item.text == 'Test Interest EDIT' for item in items))
 
         self.browser.get('http://localhost:8000/accounts/logout')

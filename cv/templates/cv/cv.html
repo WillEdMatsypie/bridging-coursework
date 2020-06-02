@@ -60,6 +60,7 @@
                                 <br>
                                 {% if user.is_authenticated %}
                                     <a class="btn btn-outline-dark delete_btn" href="{% url 'education_remove' pk=item.pk %}">Delete</span></a>
+                                    <a class="btn btn-outline-dark edit_btn" href="{% url 'education_edit' pk=item.pk %}">Edit</span></a>
                                 {% endif %}
                             </div>
                         </div>
@@ -86,6 +87,7 @@
                                 <br>
                                 {% if user.is_authenticated %}
                                     <a class="btn btn-outline-dark delete_btn" href="{% url 'experience_remove' pk=item.pk %}">Delete</span></a>
+                                    <a class="btn btn-outline-dark edit_btn" href="{% url 'experience_edit' pk=item.pk %}">Edit</span></a>
                                 {% endif %}
                             </div>
                         </div>
@@ -100,7 +102,7 @@
                 {% endif %}
                 <div class="interest-container" id="interest-table">
                     {% for item in interests %}
-                    <div class="interest-item">{{item.title}} {% if user.is_authenticated %}<a class="fa icon-switch fa-trash delete_btn" href="{% url 'interest_remove' pk=item.pk %}"></a>{% endif %}</div>
+                    <div class="interest-item">{{item.title}} {% if user.is_authenticated %}<a class="fa icon-switch fa-pencil edit_btn" href="{% url 'interest_edit' pk=item.pk %}"></a> <a class="fa icon-switch fa-trash delete_btn" href="{% url 'interest_remove' pk=item.pk %}"></a>{% endif %}</div>
                     {% endfor %}
                 </div>
             </div>

@@ -277,7 +277,7 @@ class EducationModelTest(TestCase):
         self.assertEqual(Education.objects.count(), 0)
         self.assertEqual(response['location'], "/cv/")
 
-        def setup_edit(self, data):
+    def setup_edit(self, data):
         self.client.post('/cv/education/new/', data)
         self.assertEqual(Education.objects.count(), 1)
         new_item = Education.objects.first()
@@ -292,7 +292,7 @@ class EducationModelTest(TestCase):
         self.assertEqual(response['location'], "/cv/")
         edited_item = Education.objects.first()
         self.assertEqual(edited_item.title, "Test Education 8")
-        self.assertEqual(edited_item.title, "Institution 80")
+        self.assertEqual(edited_item.location, "Institution 80")
         self.assertEqual(edited_item.detailed_text, "Test 808 Detailed")
     
     def test_education_edit_404(self):

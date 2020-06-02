@@ -29,6 +29,19 @@ def education_new(request):
     return render(request, 'cv/education_edit.html', {'form': form})
 
 @login_required
+def education_edit(request, pk):
+    education = get_object_or_404(Education, pk=pk)
+    if request.method == "POST":
+        form = EducationForm(request.POST, instance=education)
+        if form.is_valid():
+            education = form.save(commit=False)
+            education.save()
+            return redirect('cv')
+    else:
+        form = EducationForm(instance=education)
+    return render(request, 'cv/education_edit.html', {'form': form})
+
+@login_required
 def education_remove(request, pk):
     item = get_object_or_404(Education, pk=pk)
     item.delete()
@@ -79,6 +92,19 @@ def experience_new(request):
     return render(request, 'cv/experience_edit.html', {'form': form})
 
 @login_required
+def experience_edit(request, pk):
+    experience = get_object_or_404(Experience, pk=pk)
+    if request.method == "POST":
+        form = ExperienceForm(request.POST, instance=experience)
+        if form.is_valid():
+            experience = form.save(commit=False)
+            experience.save()
+            return redirect('cv')
+    else:
+        form = ExperienceForm(instance=experience)
+    return render(request, 'cv/experience_edit.html', {'form': form})
+
+@login_required
 def experience_remove(request, pk):
     item = get_object_or_404(Experience, pk=pk)
     item.delete()
@@ -94,6 +120,19 @@ def interest_new(request):
             return redirect('cv')
     else:
         form = InterestForm()
+    return render(request, 'cv/interest_edit.html', {'form': form})
+
+@login_required
+def interest_edit(request, pk):
+    interest = get_object_or_404(Interest, pk=pk)
+    if request.method == "POST":
+        form = InterestForm(request.POST, instance=interest)
+        if form.is_valid():
+            interest = form.save(commit=False)
+            interest.save()
+            return redirect('cv')
+    else:
+        form = InterestForm(instance=interest)
     return render(request, 'cv/interest_edit.html', {'form': form})
 
 @login_required
