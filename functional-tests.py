@@ -160,6 +160,86 @@ class FunctionalTest(unittest.TestCase):
 
         self.browser.get('http://localhost:8000/accounts/logout')
     
+    def test_skill_edit(self):
+        # Login to edit
+        self.login()
+        self.browser.get('http://localhost:8000/cv')
+
+        # Click button for new skill
+        new_button = self.browser.find_element_by_id("new-skill")
+        new_button.click()
+
+        # Display new skill form
+        self.base_html_loads()
+
+        # Notice all applicable fields
+        title = self.browser.find_element_by_id("id_title")
+        skill_type = Select(self.browser.find_element_by_id('id_skill_type'))
+        save = self.browser.find_element_by_class_name("save")
+
+        # Fill in the form
+        title.send_keys("Skill Tech 2")
+        skill_type.select_by_visible_text("TECHNICAL")
+        save.click()
+
+        # Notice the table
+        tech_table = self.browser.find_element_by_id("tech-skill-table")
+
+        # Check item is displayed
+        items = tech_table.find_elements_by_class_name("skill-item")
+        self.assertTrue(any(item.text == 'Skill Tech 2' for item in items))
+
+        # find the specific item
+        for item in items:
+            if 'Skill Tech 2' in item.text:
+                tech_skill = item
+        
+        # See edit button
+        edit_btn = tech_skill.find_element_by_class_name("edit_btn")
+        edit_btn.click()
+
+        # Display edit skill form
+        self.base_html_loads()
+
+        # Notice all applicable fields
+        title = self.browser.find_element_by_id("id_title")
+        skill_type = Select(self.browser.find_element_by_id('id_skill_type'))
+        save = self.browser.find_element_by_class_name("save")
+
+        # Fill in the form
+        title.send_keys("Skill Other 2")
+        skill_type.select_by_visible_text("OTHER")
+        save.click()
+
+        # Notice the tables
+        tech_table = self.browser.find_element_by_id("tech-skill-table")
+        other_table = self.browser.find_element_by_id("other-skill-table")
+
+        # Check item is displayed and is not in tech table
+        items = tech_table.find_elements_by_class_name("skill-item")
+        items2 = tech_table.find_elements_by_class_name("skill-item")
+        self.assertFalse(any(item.text == 'Skill Tech 2' for item in items))
+        self.assertFalse(any(item.text == 'Skill Other 2' for item in items))
+        self.assertFalse(any(item.text == 'Skill Tech 2' for item in items2))
+        self.assertTrue(any(item.text == 'Skill Other 2' for item in items2))
+
+        # Delete item
+        for item in items2:
+            if 'Skill Other 2' in item.text:
+                other_skill = item
+
+        delete_btn = other_skill.find_element_by_class_name("delete_btn")
+        delete_btn.click()
+        time.sleep(1)
+
+        other_table = self.browser.find_element_by_id("other-skill-table")
+
+        items = other_table.find_elements_by_class_name("skill-item")
+        self.assertFalse(any(item.text == 'Skill Other 2' for item in items))
+
+        self.browser.get('http://localhost:8000/accounts/logout')
+
+
     def test_education(self):
         # Login to edit
         self.login()
