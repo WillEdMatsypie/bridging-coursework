@@ -1,8 +1,10 @@
 # zenith-blog
 
-This Repository holds the code for my website [here](zenithos.pythonanywhere.com)
+This Repository holds the code for my website https://zenithos.pythonanywhere.com/
 
 This README is primarily for personal use on how I do certain things to the website while developing
+
+This site was developed following The Django Girls tutorial (https://tutorial.djangogirls.org/en/) and tested following Obey the Testing Goat (https://www.obeythetestinggoat.com/book/preface.html)
 
 ## Requirements
 - Python 3 (3.6 or greater)
