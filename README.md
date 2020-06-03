@@ -1,4 +1,15 @@
-# bridging-coursework
+# zenith-blog
+
+This Repository holds the code for my website [here](zenithos.pythonanywhere.com)
+
+This README is primarily for personal use on how I do certain things to the website while developing
+
+## Requirements
+- Python 3 (3.6 or greater)
+- Django 
+- Selenium (For testing)
+- geckodriver (For Testing)
+- Firefox
 
 ## Access Virtual Env for development
 
@@ -15,7 +26,8 @@
 6. `cd zenithos.pythonanywhere.com` then `workon zenithos.pythonanywhere.com`
 7. `git pull`
 8. IF there were changes to static elements like images or CSS `python [manage.py](http://manage.py) collectstatic`
-9. Reload Web App 
+9. IF there were model changes `python manage.py migrate [OPTIONAL: APP_NAME]`
+10. Reload Web App 
 
 ## Testing Code
 
@@ -23,3 +35,15 @@
 2. cd your way to the project directory
 3. `source virtualenv/Scripts/activate`
 4. `python [manage.py](http://manage.py) test TEST_MODULE_NAMES`
+
+## Making new apps
+
+1. `python manage.py startapp NAME_OF_APP`
+2. Edit mysite/settings.py accordingly
+
+## Making new models
+
+1. Add model to relevant app
+2. When complete, in terminal `python manage.py makemigrations [OPTIONAL: APP_NAME]`
+3. `python manage.py migrate [OPTIONAL: APP_NAME]`
+
