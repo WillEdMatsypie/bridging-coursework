@@ -65,7 +65,7 @@ class FunctionalTest(unittest.TestCase):
 
         # See section headings in CV
         headings = self.browser.find_elements_by_class_name('section-header')
-        self.assertTrue(any(section.text == 'Summary' for section in headings))
+        self.assertTrue(any(section.text == 'Statement' for section in headings))
         self.assertTrue(any(section.text == 'Skills' for section in headings))
         self.assertTrue(any(section.text == 'Education' for section in headings))
         self.assertTrue(any(section.text == 'Experience' for section in headings))
