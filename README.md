@@ -12,7 +12,7 @@
 3. `git push` to remote repository
 4. Go to PythonAnywhere
 5. Open a console 
-6. `cd [zenithos.pythonanywhere.com](http://zenithos.pythonanywhere.com)` then `workon zenithos.pythonanywhere.com`
+6. `cd zenithos.pythonanywhere.com` then `workon zenithos.pythonanywhere.com`
 7. `git pull`
 8. IF there were changes to static elements like images or CSS `python [manage.py](http://manage.py) collectstatic`
 9. Reload Web App 
