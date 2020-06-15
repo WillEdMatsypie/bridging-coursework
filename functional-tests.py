@@ -1,8 +1,11 @@
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException        
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select
 import time
 import unittest
+
+from cv.models import Education, Skill, Experience, Interest  
 
 class FunctionalTest(unittest.TestCase):
 
@@ -682,6 +685,178 @@ class FunctionalTest(unittest.TestCase):
         interest_table = self.browser.find_element_by_id("interest-table")
         items = interest_table.find_elements_by_class_name("interest-item")
         self.assertFalse(any(item.text == 'Test Interest EDIT' for item in items))
+
+        self.browser.get('http://localhost:8000/accounts/logout')
+
+    def login_page_show(self, url):
+        self.browser.get(url)
+        try:
+            self.browser.find_element_by_id('id_username')
+            self.browser.find_element_by_id('id_password')
+            self.browser.find_element_by_id("login-button")
+        except NoSuchElementException:
+            return False
+        return True
+
+    def test_cv_authentication_urls(self):
+        self.assertFalse(self.login_page_show('http://localhost:8000/cv'))
+
+        self.assertTrue(self.login_page_show('http://localhost:8000/cv/interest/new'))
+        self.assertTrue(self.login_page_show('http://localhost:8000/cv/experience/new'))
+        self.assertTrue(self.login_page_show('http://localhost:8000/cv/skill/new'))
+        self.assertTrue(self.login_page_show('http://localhost:8000/cv/education/new'))
+
+        self.assertTrue(self.login_page_show('http://localhost:8000/cv/interest/0/edit'))
+        self.assertTrue(self.login_page_show('http://localhost:8000/cv/experience/0/edit'))
+        self.assertTrue(self.login_page_show('http://localhost:8000/cv/skill/0/edit'))
+        self.assertTrue(self.login_page_show('http://localhost:8000/cv/education/0/edit'))
+
+        self.assertTrue(self.login_page_show('http://localhost:8000/cv/interest/0/remove'))
+        self.assertTrue(self.login_page_show('http://localhost:8000/cv/experience/0/remove'))
+        self.assertTrue(self.login_page_show('http://localhost:8000/cv/skill/0/remove'))
+        self.assertTrue(self.login_page_show('http://localhost:8000/cv/education/0/remove'))
+    
+    def element_exists_by_class(self, parent, className):
+        try:
+            parent.find_element_by_class_name(className)
+        except NoSuchElementException:
+            return False
+        return True
+
+    def find_items_for_auth_test(self):
+        # Notice the interest table
+        interest_table = self.browser.find_element_by_id("interest-table")
+
+        # Check interest is displayed
+        items = interest_table.find_elements_by_class_name("interest-item")
+        self.assertTrue(any(item.text == 'No Auth Interest' for item in items))
+        
+        # find the specific item
+        for item in items:
+            if 'No Auth Interest' in item.text:
+                interest = item
+        
+        # Check experience is displayed
+        experience_section = self.browser.find_element_by_id("experience-section")
+        items = experience_section.find_elements_by_class_name("card")
+        self.assertTrue(any('No Auth Experience' in item.text for item in items))
+
+        # find the specific item
+        for item in items:
+            if 'No Auth Experience' in item.text:
+                experience = item
+        
+        # Check education is displayed
+        education_section = self.browser.find_element_by_id("education-section")
+        items = education_section.find_elements_by_class_name("card")
+        self.assertTrue(any('No Auth Education' in item.text for item in items))
+
+        # find the specific item
+        for item in items:
+            if 'No Auth Education' in item.text:
+                education = item
+
+        # Notice skill tables
+        tech_table = self.browser.find_element_by_id("tech-skill-table")
+        other_table = self.browser.find_element_by_id("other-skill-table")
+
+        # Check tech item is displayed
+        items = tech_table.find_elements_by_class_name("skill-item")
+        self.assertTrue(any(item.text == 'No Auth Skill' for item in items))
+        
+        # find the specific item
+        for item in items:
+            if 'No Auth Skill' in item.text:
+                tech_skill = item
+
+        # Repeat for other table
+        items = other_table.find_elements_by_class_name("skill-item")
+        self.assertTrue(any(item.text == 'No Auth Skill 2' for item in items))
+
+        items = other_table.find_elements_by_class_name("skill-item")
+        for item in items:
+            if 'No Auth Skill 2' in item.text:
+                other_skill = item
+        
+        return interest, education, experience, tech_skill, other_skill
+        
+
+
+    def test_cv_authentication_visible_elements(self):
+        # Create Items for Test
+        item1 = Interest()
+        item1.title = "No Auth Interest"
+        item1.save()
+        item2 = Skill()
+        item2.title = "No Auth Skill"
+        item2.skill_type = "technical"
+        item2.save()
+        item3 = Skill()
+        item3.title = "No Auth Skill 2"
+        item3.skill_type = "other"
+        item3.save()
+        item4 = Education()
+        item4.title = "No Auth Education"
+        item4.location = "Institution No Auth"
+        item4.start_date = "Test No Auth"
+        item4.end_date = "Test No Auth"
+        item4.brief_text = "Test No Auth Brief" 
+        item4.detailed_text = "Test No Auth Detailed" 
+        item4.save()
+        item5 = Experience()
+        item5.title = "No Auth Experience"
+        item5.subtitle = "Experience No Auth Type"
+        item5.date = "Test No Auth"
+        item5.text = "Test No Auth Detailed" 
+        item5.save()
+
+        # Load CV Page
+        self.browser.get('http://localhost:8000/cv')
+        self.base_html_loads()
+        
+        # Find test elements
+        interest, education, experience, tech_skill, other_skill = self.find_items_for_auth_test()
+
+        # See no edit or delete buttons
+        self.assertFalse(self.element_exists_by_class(interest, 'edit_btn'))
+        self.assertFalse(self.element_exists_by_class(interest, 'delete_btn'))
+        self.assertFalse(self.element_exists_by_class(education, 'edit_btn'))
+        self.assertFalse(self.element_exists_by_class(education, 'delete_btn'))
+        self.assertFalse(self.element_exists_by_class(experience, 'edit_btn'))
+        self.assertFalse(self.element_exists_by_class(experience, 'delete_btn'))
+        self.assertFalse(self.element_exists_by_class(tech_skill, 'edit_btn'))
+        self.assertFalse(self.element_exists_by_class(tech_skill, 'delete_btn'))
+        self.assertFalse(self.element_exists_by_class(other_skill, 'edit_btn'))
+        self.assertFalse(self.element_exists_by_class(other_skill, 'delete_btn'))
+
+        # Login
+        self.login()
+
+        # Load CV Page
+        self.browser.get('http://localhost:8000/cv')
+        self.base_html_loads()
+        
+        # Find test elements
+        interest, education, experience, tech_skill, other_skill = self.find_items_for_auth_test()
+
+        # See no edit or delete buttons
+        self.assertTrue(self.element_exists_by_class(interest, 'edit_btn'))
+        self.assertTrue(self.element_exists_by_class(interest, 'delete_btn'))
+        self.assertTrue(self.element_exists_by_class(education, 'edit_btn'))
+        self.assertTrue(self.element_exists_by_class(education, 'delete_btn'))
+        self.assertTrue(self.element_exists_by_class(experience, 'edit_btn'))
+        self.assertTrue(self.element_exists_by_class(experience, 'delete_btn'))
+        self.assertTrue(self.element_exists_by_class(tech_skill, 'edit_btn'))
+        self.assertTrue(self.element_exists_by_class(tech_skill, 'delete_btn'))
+        self.assertTrue(self.element_exists_by_class(other_skill, 'edit_btn'))
+        self.assertTrue(self.element_exists_by_class(other_skill, 'delete_btn'))
+
+        # Cleanup
+        item1.delete()
+        item2.delete()
+        item3.delete()
+        item4.delete()
+        item5.delete()
 
         self.browser.get('http://localhost:8000/accounts/logout')
         # In Terminal use the command `python manage.py test functional-tests` to run these
