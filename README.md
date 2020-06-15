@@ -40,10 +40,7 @@ _NOTE: Run Functional Tests separately to Unit Tests_
 
 ## Unit Testing Code
 
-1. Open Git Bash
-2. cd your way to the project directory
-3. `source virtualenv/Scripts/activate`
-4. `python manage.py test TEST_MODULE_NAMES`
+1. Within project directory `python manage.py test TEST_MODULE_NAMES`
 
 ## Making new apps
 

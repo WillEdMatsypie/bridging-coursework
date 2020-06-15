@@ -5,8 +5,6 @@ from selenium.webdriver.support.ui import Select
 import time
 import unittest
 
-from cv.models import Education, Skill, Experience, Interest  
-
 class FunctionalTest(unittest.TestCase):
 
     def setUp(self):
@@ -789,7 +787,7 @@ class FunctionalTest(unittest.TestCase):
         
 
 
-    def test_cv_authentication_visible_elements(self):
+    def test_cv_authentication_add_buttons(self):
 
         #Check new item buttons don't show
         self.browser.get('http://localhost:8000/cv')
@@ -807,80 +805,6 @@ class FunctionalTest(unittest.TestCase):
         self.assertTrue(self.element_exists_by_id(self.browser, 'new-education'))
         self.browser.get('http://localhost:8000/accounts/logout')
 
-        # Create Items for Test
-        item1 = Interest()
-        item1.title = "No Auth Interest"
-        item1.save()
-        item2 = Skill()
-        item2.title = "No Auth Skill"
-        item2.skill_type = "technical"
-        item2.save()
-        item3 = Skill()
-        item3.title = "No Auth Skill 2"
-        item3.skill_type = "other"
-        item3.save()
-        item4 = Education()
-        item4.title = "No Auth Education"
-        item4.location = "Institution No Auth"
-        item4.start_date = "Test No Auth"
-        item4.end_date = "Test No Auth"
-        item4.brief_text = "Test No Auth Brief" 
-        item4.detailed_text = "Test No Auth Detailed" 
-        item4.save()
-        item5 = Experience()
-        item5.title = "No Auth Experience"
-        item5.subtitle = "Experience No Auth Type"
-        item5.date = "Test No Auth"
-        item5.text = "Test No Auth Detailed" 
-        item5.save()
-
-        # Load CV Page
-        self.browser.get('http://localhost:8000/cv')
-        self.base_html_loads()
-        
-        # Find test elements
-        interest, education, experience, tech_skill, other_skill = self.find_items_for_auth_test()
-
-        # See no edit or delete buttons
-        self.assertFalse(self.element_exists_by_class(interest, 'edit_btn'))
-        self.assertFalse(self.element_exists_by_class(interest, 'delete_btn'))
-        self.assertFalse(self.element_exists_by_class(education, 'edit_btn'))
-        self.assertFalse(self.element_exists_by_class(education, 'delete_btn'))
-        self.assertFalse(self.element_exists_by_class(experience, 'edit_btn'))
-        self.assertFalse(self.element_exists_by_class(experience, 'delete_btn'))
-        self.assertFalse(self.element_exists_by_class(tech_skill, 'edit_btn'))
-        self.assertFalse(self.element_exists_by_class(tech_skill, 'delete_btn'))
-        self.assertFalse(self.element_exists_by_class(other_skill, 'edit_btn'))
-        self.assertFalse(self.element_exists_by_class(other_skill, 'delete_btn'))
-
-        # Login
-        self.login()
-
-        # Load CV Page
-        self.browser.get('http://localhost:8000/cv')
-        self.base_html_loads()
-        
-        # Find test elements
-        interest, education, experience, tech_skill, other_skill = self.find_items_for_auth_test()
-
-        # See no edit or delete buttons
-        self.assertTrue(self.element_exists_by_class(interest, 'edit_btn'))
-        self.assertTrue(self.element_exists_by_class(interest, 'delete_btn'))
-        self.assertTrue(self.element_exists_by_class(education, 'edit_btn'))
-        self.assertTrue(self.element_exists_by_class(education, 'delete_btn'))
-        self.assertTrue(self.element_exists_by_class(experience, 'edit_btn'))
-        self.assertTrue(self.element_exists_by_class(experience, 'delete_btn'))
-        self.assertTrue(self.element_exists_by_class(tech_skill, 'edit_btn'))
-        self.assertTrue(self.element_exists_by_class(tech_skill, 'delete_btn'))
-        self.assertTrue(self.element_exists_by_class(other_skill, 'edit_btn'))
-        self.assertTrue(self.element_exists_by_class(other_skill, 'delete_btn'))
-
-        # Cleanup
-        item1.delete()
-        item2.delete()
-        item3.delete()
-        item4.delete()
-        item5.delete()
-
-        self.browser.get('http://localhost:8000/accounts/logout')
-        # In Terminal use the command `python manage.py test functional-tests` to run these
+if __name__ == '__main__':
+    unittest.main(warnings='ignore')
+# In Terminal use the command `python manage.py test functional-tests` to run these
