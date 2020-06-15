@@ -723,6 +723,13 @@ class FunctionalTest(unittest.TestCase):
             return False
         return True
 
+    def element_exists_by_id(self, parent, idName):
+        try:
+            parent.find_element_by_id(idName)
+        except NoSuchElementException:
+            return False
+        return True
+
     def find_items_for_auth_test(self):
         # Notice the interest table
         interest_table = self.browser.find_element_by_id("interest-table")
@@ -783,6 +790,23 @@ class FunctionalTest(unittest.TestCase):
 
 
     def test_cv_authentication_visible_elements(self):
+
+        #Check new item buttons don't show
+        self.browser.get('http://localhost:8000/cv')
+        self.assertFalse(self.element_exists_by_id(self.browser, 'new-interest'))
+        self.assertFalse(self.element_exists_by_id(self.browser, 'new-skill'))
+        self.assertFalse(self.element_exists_by_id(self.browser, 'new-experience'))
+        self.assertFalse(self.element_exists_by_id(self.browser, 'new-education'))
+
+        # Check new item buttons show and add items
+        self.login()
+        self.browser.get('http://localhost:8000/cv')
+        self.assertTrue(self.element_exists_by_id(self.browser, 'new-interest'))
+        self.assertTrue(self.element_exists_by_id(self.browser, 'new-skill'))
+        self.assertTrue(self.element_exists_by_id(self.browser, 'new-experience'))
+        self.assertTrue(self.element_exists_by_id(self.browser, 'new-education'))
+        self.browser.get('http://localhost:8000/accounts/logout')
+
         # Create Items for Test
         item1 = Interest()
         item1.title = "No Auth Interest"
