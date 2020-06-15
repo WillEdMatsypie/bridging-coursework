@@ -610,3 +610,237 @@ class InterestModelTest(TestCase):
         response = self.client.get(url)
         self.assertIsInstance(response.context['form'], InterestForm) 
         self.assertContains(response, 'name="title"')
+
+class AuthenticationTest(TestCase):
+
+    def test_new_interest_form_unauthenticated(self):
+        response = self.client.get('/cv/interest/new/')
+        self.assertNotEqual(response['location'], "/cv/interest/new/")
+        self.assertEqual(response['location'], "/accounts/login/?next=/cv/interest/new/")
+    
+    def test_new_interest_post_unauthenticated(self):
+        data={'title':"Test No Auth Interest",}
+        response = self.client.post('/cv/interest/new/', data)
+        self.assertEqual(Interest.objects.count(), 0)
+        self.assertEqual(response['location'], "/accounts/login/?next=/cv/interest/new/")
+    
+    def test_edit_interest_form_unauthenticated(self):
+        item = Interest()
+        item.title = "Test No Auth Interest 1"
+        item.save()
+        self.assertEqual(Interest.objects.count(), 1)
+        new_item = Interest.objects.first()
+        url = "/cv/interest/" + str(new_item.pk) + "/edit/"
+        response = self.client.get(url)
+        self.assertEqual(Interest.objects.count(), 1)
+        self.assertNotEqual(response['location'], url)
+        self.assertEqual(response['location'], "/accounts/login/?next="+url)
+
+    def test_edit_interest_post_unauthenticated(self):
+        item = Interest()
+        item.title = "Test No Auth Interest 2"
+        item.save()
+        self.assertEqual(Interest.objects.count(), 1)
+        new_item = Interest.objects.first()
+        url = "/cv/interest/" + str(new_item.pk) + "/edit/"
+        data={'title':"Test No Auth Interest 20",}
+        response = self.client.post(url, data)
+        self.assertEqual(Interest.objects.count(), 1)
+        self.assertNotEqual(response['location'], "/cv/")
+        self.assertEqual(response['location'], "/accounts/login/?next="+url)
+        unedited_item = Interest.objects.first()
+        self.assertEqual(unedited_item.title, "Test No Auth Interest 2")
+    
+    def test_delete_interest_unauthenticated(self):
+        item = Interest()
+        item.title = "Test No Auth Interest 3"
+        item.save()
+        self.assertEqual(Interest.objects.count(), 1)
+        new_item = Interest.objects.first()
+        url = "/cv/interest/" + str(new_item.pk) + "/remove/"
+        response = self.client.get(url)
+        self.assertEqual(Interest.objects.count(), 1)
+        self.assertNotEqual(response['location'], "/cv/")
+        self.assertEqual(response['location'], "/accounts/login/?next="+url)
+    
+    def test_new_skill_form_unauthenticated(self):
+        response = self.client.get('/cv/skill/new/')
+        self.assertNotEqual(response['location'], "/cv/skill/new/")
+        self.assertEqual(response['location'], "/accounts/login/?next=/cv/skill/new/")
+    
+    def test_new_skill_post_unauthenticated(self):
+        data={'title':"Test No Auth Skill", 'skill_type':"technical"}
+        response = self.client.post('/cv/skill/new/', data)
+        self.assertEqual(Skill.objects.count(), 0)
+        self.assertEqual(response['location'], "/accounts/login/?next=/cv/skill/new/")
+    
+    def test_edit_skill_form_unauthenticated(self):
+        item = Skill()
+        item.title = "Test No Auth Skill 1"
+        item.skill_type = "technical"
+        item.save()
+        self.assertEqual(Skill.objects.count(), 1)
+        new_item = Skill.objects.first()
+        url = "/cv/skill/" + str(new_item.pk) + "/edit/"
+        response = self.client.get(url)
+        self.assertEqual(Skill.objects.count(), 1)
+        self.assertNotEqual(response['location'], url)
+        self.assertEqual(response['location'], "/accounts/login/?next="+url)
+
+    def test_edit_skill_post_unauthenticated(self):
+        item = Skill()
+        item.title = "Test No Auth Skill 2"
+        item.skill_type = "technical"
+        item.save()
+        self.assertEqual(Skill.objects.count(), 1)
+        new_item = Skill.objects.first()
+        url = "/cv/skill/" + str(new_item.pk) + "/edit/"
+        data={'title':"Test No Auth Skill 20", 'skill_type':"other"}
+        response = self.client.post(url, data)
+        self.assertEqual(Skill.objects.count(), 1)
+        self.assertNotEqual(response['location'], "/cv/")
+        self.assertEqual(response['location'], "/accounts/login/?next="+url)
+        unedited_item = Skill.objects.first()
+        self.assertEqual(unedited_item.title, "Test No Auth Skill 2")
+        self.assertEqual(unedited_item.skill_type, "technical")
+    
+    def test_delete_skill_unauthenticated(self):
+        item = Skill()
+        item.title = "Test No Auth Skill 3"
+        item.skill_type = "technical"
+        item.save()
+        self.assertEqual(Skill.objects.count(), 1)
+        new_item = Skill.objects.first()
+        url = "/cv/skill/" + str(new_item.pk) + "/remove/"
+        response = self.client.get(url)
+        self.assertEqual(Skill.objects.count(), 1)
+        self.assertNotEqual(response['location'], "/cv/")
+        self.assertEqual(response['location'], "/accounts/login/?next="+url)
+    
+    def test_new_education_form_unauthenticated(self):
+        response = self.client.get('/cv/education/new/')
+        self.assertNotEqual(response['location'], "/cv/education/new/")
+        self.assertEqual(response['location'], "/accounts/login/?next=/cv/education/new/")
+    
+    def test_new_education_post_unauthenticated(self):
+        data={'title':"Test No Auth Education", 'location':"Institution", 'start_date':"Test date", 'end_date':"Test end", 'brief_text':"Test Brief", 'detailed_text':"Test Detailed",}
+        response = self.client.post('/cv/education/new/', data)
+        self.assertEqual(Education.objects.count(), 0)
+        self.assertEqual(response['location'], "/accounts/login/?next=/cv/education/new/")
+    
+    def test_edit_education_form_unauthenticated(self):
+        item = Education()
+        item.title = "Test No Auth Education 1"
+        item.location = "Institution No Auth 1"
+        item.start_date = "Test No Auth 01"
+        item.end_date = "Test No Auth 10"
+        item.brief_text = "Test No Auth 1 Brief" 
+        item.detailed_text = "Test No Auth 1 Detailed" 
+        item.save()
+        self.assertEqual(Education.objects.count(), 1)
+        new_item = Education.objects.first()
+        url = "/cv/education/" + str(new_item.pk) + "/edit/"
+        response = self.client.get(url)
+        self.assertEqual(Education.objects.count(), 1)
+        self.assertNotEqual(response['location'], url)
+        self.assertEqual(response['location'], "/accounts/login/?next="+url)
+
+    def test_edit_education_post_unauthenticated(self):
+        item = Education()
+        item.title = "Test No Auth Education 2"
+        item.location = "Institution No Auth 2"
+        item.start_date = "Test No Auth 02"
+        item.end_date = "Test No Auth 20"
+        item.brief_text = "Test No Auth 2 Brief" 
+        item.detailed_text = "Test No Auth 2 Detailed" 
+        item.save()
+        self.assertEqual(Education.objects.count(), 1)
+        new_item = Education.objects.first()
+        url = "/cv/education/" + str(new_item.pk) + "/edit/"
+        data={'title':"Test No Auth Education", 'location':"Institution", 'start_date':"Test date", 'end_date':"Test end", 'brief_text':"Test Brief", 'detailed_text':"Test Detailed",}
+        response = self.client.post(url, data)
+        self.assertEqual(Education.objects.count(), 1)
+        self.assertNotEqual(response['location'], "/cv/")
+        self.assertEqual(response['location'], "/accounts/login/?next="+url)
+        unedited_item = Education.objects.first()
+        self.assertEqual(unedited_item.title, "Test No Auth Education 2")
+        self.assertEqual(unedited_item.location, "Institution No Auth 2")
+        self.assertEqual(unedited_item.detailed_text, "Test No Auth 2 Detailed")
+    
+    def test_delete_education_unauthenticated(self):
+        item = Education()
+        item.title = "Test No Auth Education 3"
+        item.location = "Institution No Auth 3"
+        item.start_date = "Test No Auth 03"
+        item.end_date = "Test No Auth 30"
+        item.brief_text = "Test No Auth 3 Brief" 
+        item.detailed_text = "Test No Auth 3 Detailed" 
+        item.save()
+        self.assertEqual(Education.objects.count(), 1)
+        new_item = Education.objects.first()
+        url = "/cv/education/" + str(new_item.pk) + "/remove/"
+        response = self.client.get(url)
+        self.assertEqual(Education.objects.count(), 1)
+        self.assertNotEqual(response['location'], "/cv/")
+        self.assertEqual(response['location'], "/accounts/login/?next="+url)
+
+    def test_new_experience_form_unauthenticated(self):
+        response = self.client.get('/cv/experience/new/')
+        self.assertNotEqual(response['location'], "/cv/experience/new/")
+        self.assertEqual(response['location'], "/accounts/login/?next=/cv/experience/new/")
+    
+    def test_new_experience_post_unauthenticated(self):
+        data={'title':"Test No Auth Experience", 'subtitle':"Experience Type", 'date':"Test date", 'text':"Test Detailed",}
+        response = self.client.post('/cv/experience/new/', data)
+        self.assertEqual(Experience.objects.count(), 0)
+        self.assertEqual(response['location'], "/accounts/login/?next=/cv/experience/new/")
+    
+    def test_edit_experience_form_unauthenticated(self):
+        item = Experience()
+        item.title = "Test No Auth Experience 1"
+        item.subtitle = "Experience No Auth 1 Type"
+        item.date = "Test No Auth 01"
+        item.text = "Test No Auth 1 Detailed" 
+        item.save()
+        self.assertEqual(Experience.objects.count(), 1)
+        new_item = Experience.objects.first()
+        url = "/cv/experience/" + str(new_item.pk) + "/edit/"
+        response = self.client.get(url)
+        self.assertEqual(Experience.objects.count(), 1)
+        self.assertNotEqual(response['location'], url)
+        self.assertEqual(response['location'], "/accounts/login/?next="+url)
+
+    def test_edit_experience_post_unauthenticated(self):
+        item = Experience()
+        item.title = "Test No Auth Experience 2"
+        item.subtitle = "Experience No Auth 2 Type"
+        item.date = "Test No Auth 02"
+        item.text = "Test No Auth 2 Detailed" 
+        item.save()
+        self.assertEqual(Experience.objects.count(), 1)
+        new_item = Experience.objects.first()
+        url = "/cv/experience/" + str(new_item.pk) + "/edit/"
+        data={'title':"Test No Auth Experience", 'subtitle':"Experience Type", 'date':"Test date", 'text':"Test Detailed",}
+        response = self.client.post(url, data)
+        self.assertEqual(Experience.objects.count(), 1)
+        self.assertNotEqual(response['location'], "/cv/")
+        self.assertEqual(response['location'], "/accounts/login/?next="+url)
+        unedited_item = Experience.objects.first()
+        self.assertEqual(unedited_item.title, "Test No Auth Experience 2")
+        self.assertEqual(unedited_item.subtitle, "Experience No Auth 2 Type")
+        self.assertEqual(unedited_item.text, "Test No Auth 2 Detailed")
+    
+    def test_delete_experience_unauthenticated(self):
+        item = Experience()
+        item.title = "Test No Auth Experience 3"
+        item.subtitle = "Experience No Auth 3 Type"
+        item.date = "Test No Auth 03"
+        item.text = "Test No Auth 3 Detailed" 
+        item.save()
+        self.assertEqual(Experience.objects.count(), 1)
+        new_item = Experience.objects.first()
+        url = "/cv/experience/" + str(new_item.pk) + "/remove/"
+        response = self.client.get(url)
+        self.assertEqual(Experience.objects.count(), 1)
+        self.assertNotEqual(response['location'], "/cv/")
+        self.assertEqual(response['location'], "/accounts/login/?next="+url)
