@@ -31,7 +31,14 @@ This site was developed following The Django Girls tutorial (https://tutorial.dj
 9. IF there were model changes `python manage.py migrate [OPTIONAL: APP_NAME]`
 10. Reload Web App 
 
-## Testing Code
+## Functional Testing the Website
+_NOTE: Run Functional Tests separately to Unit Tests_
+1. Open Git Bash
+2. cd your way to the project directory
+3. `source virtualenv/Scripts/activate`
+4. `python manage.py test functional-tests`
+
+## Unit Testing Code
 
 1. Open Git Bash
 2. cd your way to the project directory
