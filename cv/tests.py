@@ -613,6 +613,12 @@ class InterestModelTest(TestCase):
 
 class AuthenticationTest(TestCase):
 
+    def setUp(self):
+        self.user = User.objects.create_user('temporary', 'temporary@gmail.com', 'temporary')
+
+    def tearDown(self):
+        self.user.delete()
+
     def test_new_interest_form_unauthenticated(self):
         response = self.client.get('/cv/interest/new/')
         self.assertNotEqual(response['location'], "/cv/interest/new/")
@@ -844,3 +850,99 @@ class AuthenticationTest(TestCase):
         self.assertEqual(Experience.objects.count(), 1)
         self.assertNotEqual(response['location'], "/cv/")
         self.assertEqual(response['location'], "/accounts/login/?next="+url)
+    
+    def test_add_buttons_unauthenticated(self):
+        response = self.client.get('/cv/') 
+        html = response.content.decode('utf8')  
+        self.assertNotIn('id="new-skill"', html)  
+        self.assertNotIn('id="new-education"', html)  
+        self.assertNotIn('id="new-experience"', html)  
+        self.assertNotIn('id="new-interest"', html)
+
+    def test_add_buttons_authenticated(self):
+        self.client.login(username='temporary', password='temporary')
+        response = self.client.get('/cv/') 
+        html = response.content.decode('utf8')  
+        self.assertIn('id="new-skill"', html)  
+        self.assertIn('id="new-education"', html)  
+        self.assertIn('id="new-experience"', html)  
+        self.assertIn('id="new-interest"', html)
+        self.client.logout()
+
+    def test_edit_buttons_interest_auth(self):
+        item = Interest()
+        item.title = "Test No Auth Interest EDIT 1"
+        item.save()
+        self.assertEqual(Interest.objects.count(), 1)
+        response = self.client.get('/cv/') 
+        html = response.content.decode('utf8')  
+        self.assertNotIn('class="fa icon-switch fa-pencil edit_btn"', html)  
+        self.assertNotIn('class="fa icon-switch fa-trash delete_btn"', html) 
+        self.client.login(username='temporary', password='temporary')
+        response = self.client.get('/cv/') 
+        html = response.content.decode('utf8')  
+        self.assertIn('class="fa icon-switch fa-pencil edit_btn"', html)  
+        self.assertIn('class="fa icon-switch fa-trash delete_btn"', html) 
+        self.client.logout()
+    
+    def test_edit_buttons_skills_auth(self):
+        item = Skill()
+        item.title = "Test No Auth Skill 1 EDIT"
+        item.skill_type = "technical"
+        item.save()
+        item2 = Skill()
+        item2.title = "Test No Auth Skill 2 EDIT"
+        item2.skill_type = "other"
+        item2.save()
+        self.assertEqual(Skill.objects.count(), 2)
+        response = self.client.get('/cv/') 
+        html = response.content.decode('utf8')  
+        self.assertNotIn('class="fa icon-switch fa-pencil edit_btn"', html)  
+        self.assertNotIn('class="fa icon-switch fa-trash delete_btn"', html) 
+        self.client.login(username='temporary', password='temporary')
+        response = self.client.get('/cv/') 
+        html = response.content.decode('utf8')  
+        self.assertIn('class="fa icon-switch fa-pencil edit_btn"', html)  
+        self.assertIn('class="fa icon-switch fa-trash delete_btn"', html) 
+        self.client.logout()
+    
+    def test_edit_buttons_experience_auth(self):
+        item = Experience()
+        item.title = "Test No Auth Experience 1 EDIT"
+        item.subtitle = "Placeholder"
+        item.date = "Placeholder"
+        item.text = "Placeholder" 
+        item.save()
+        self.assertEqual(Experience.objects.count(), 1)
+        response = self.client.get('/cv/') 
+        html = response.content.decode('utf8')  
+        self.assertNotIn('class="btn btn-outline-dark edit_btn"', html)  
+        self.assertNotIn('class="btn btn-outline-dark delete_btn"', html) 
+        self.client.login(username='temporary', password='temporary')
+        response = self.client.get('/cv/') 
+        html = response.content.decode('utf8')  
+        self.assertIn('class="btn btn-outline-dark edit_btn"', html)  
+        self.assertIn('class="btn btn-outline-dark delete_btn"', html) 
+        self.client.logout()
+    
+    def test_edit_buttons_education_auth(self):
+        item = Education()
+        item.title = "Test No Auth Education 1 EDIT"
+        item.location = "Placeholder"
+        item.start_date = "Placeholder"
+        item.end_date = "Placeholder"
+        item.brief_text = "Placeholder" 
+        item.detailed_text = "Placeholder" 
+        item.save()
+        self.assertEqual(Education.objects.count(), 1)
+        response = self.client.get('/cv/') 
+        html = response.content.decode('utf8')  
+        self.assertNotIn('class="btn btn-outline-dark edit_btn"', html)  
+        self.assertNotIn('class="btn btn-outline-dark delete_btn"', html) 
+        self.client.login(username='temporary', password='temporary')
+        response = self.client.get('/cv/') 
+        html = response.content.decode('utf8')  
+        self.assertIn('class="btn btn-outline-dark edit_btn"', html)  
+        self.assertIn('class="btn btn-outline-dark delete_btn"', html) 
+        self.client.logout()
+

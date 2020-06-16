@@ -697,6 +697,7 @@ class FunctionalTest(unittest.TestCase):
         return True
 
     def test_cv_authentication_urls(self):
+        # Test to see if login page displays appropriately on trying to access these URLs
         self.assertFalse(self.login_page_show('http://localhost:8000/cv'))
 
         self.assertTrue(self.login_page_show('http://localhost:8000/cv/interest/new'))
@@ -713,97 +714,6 @@ class FunctionalTest(unittest.TestCase):
         self.assertTrue(self.login_page_show('http://localhost:8000/cv/experience/0/remove'))
         self.assertTrue(self.login_page_show('http://localhost:8000/cv/skill/0/remove'))
         self.assertTrue(self.login_page_show('http://localhost:8000/cv/education/0/remove'))
-    
-    def element_exists_by_class(self, parent, className):
-        try:
-            parent.find_element_by_class_name(className)
-        except NoSuchElementException:
-            return False
-        return True
-
-    def element_exists_by_id(self, parent, idName):
-        try:
-            parent.find_element_by_id(idName)
-        except NoSuchElementException:
-            return False
-        return True
-
-    def find_items_for_auth_test(self):
-        # Notice the interest table
-        interest_table = self.browser.find_element_by_id("interest-table")
-
-        # Check interest is displayed
-        items = interest_table.find_elements_by_class_name("interest-item")
-        self.assertTrue(any(item.text == 'No Auth Interest' for item in items))
-        
-        # find the specific item
-        for item in items:
-            if 'No Auth Interest' in item.text:
-                interest = item
-        
-        # Check experience is displayed
-        experience_section = self.browser.find_element_by_id("experience-section")
-        items = experience_section.find_elements_by_class_name("card")
-        self.assertTrue(any('No Auth Experience' in item.text for item in items))
-
-        # find the specific item
-        for item in items:
-            if 'No Auth Experience' in item.text:
-                experience = item
-        
-        # Check education is displayed
-        education_section = self.browser.find_element_by_id("education-section")
-        items = education_section.find_elements_by_class_name("card")
-        self.assertTrue(any('No Auth Education' in item.text for item in items))
-
-        # find the specific item
-        for item in items:
-            if 'No Auth Education' in item.text:
-                education = item
-
-        # Notice skill tables
-        tech_table = self.browser.find_element_by_id("tech-skill-table")
-        other_table = self.browser.find_element_by_id("other-skill-table")
-
-        # Check tech item is displayed
-        items = tech_table.find_elements_by_class_name("skill-item")
-        self.assertTrue(any(item.text == 'No Auth Skill' for item in items))
-        
-        # find the specific item
-        for item in items:
-            if 'No Auth Skill' in item.text:
-                tech_skill = item
-
-        # Repeat for other table
-        items = other_table.find_elements_by_class_name("skill-item")
-        self.assertTrue(any(item.text == 'No Auth Skill 2' for item in items))
-
-        items = other_table.find_elements_by_class_name("skill-item")
-        for item in items:
-            if 'No Auth Skill 2' in item.text:
-                other_skill = item
-        
-        return interest, education, experience, tech_skill, other_skill
-        
-
-
-    def test_cv_authentication_add_buttons(self):
-
-        #Check new item buttons don't show
-        self.browser.get('http://localhost:8000/cv')
-        self.assertFalse(self.element_exists_by_id(self.browser, 'new-interest'))
-        self.assertFalse(self.element_exists_by_id(self.browser, 'new-skill'))
-        self.assertFalse(self.element_exists_by_id(self.browser, 'new-experience'))
-        self.assertFalse(self.element_exists_by_id(self.browser, 'new-education'))
-
-        # Check new item buttons show and add items
-        self.login()
-        self.browser.get('http://localhost:8000/cv')
-        self.assertTrue(self.element_exists_by_id(self.browser, 'new-interest'))
-        self.assertTrue(self.element_exists_by_id(self.browser, 'new-skill'))
-        self.assertTrue(self.element_exists_by_id(self.browser, 'new-experience'))
-        self.assertTrue(self.element_exists_by_id(self.browser, 'new-education'))
-        self.browser.get('http://localhost:8000/accounts/logout')
 
 if __name__ == '__main__':
     unittest.main(warnings='ignore')
