@@ -53,12 +53,13 @@ a:hover {
 }
 
 .social-btn {
+    width: 58px;
+    height: 58px;
+    text-align: center;
     color: black;
     border: 3px solid black; 
     border-radius: 500px;
-    font-size: xx-large;   
-    align-items: center;
-    vertical-align: middle;
+    font-size: 32px;   
     padding: 1%;
     display: inline-block;
     transition: 0.5s;
