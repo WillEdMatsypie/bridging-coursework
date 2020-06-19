@@ -40,13 +40,13 @@ a:hover {
     color: black ;
   }
 
-.btn-outline-dark {
+.btn-outline-dark, .btn-outline-light {
     border-radius: 0;
     border-width: 2px;
     font-weight: 500;
 }
 
-.btn-outline-dark.big {
+.btn-outline-dark.big, .btn-outline-light.big {
     border-width: 5px;
     font-size: large;
     font-weight: 700;
