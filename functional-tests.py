@@ -19,6 +19,16 @@ class FunctionalTest(unittest.TestCase):
         self.browser.find_element_by_id('id_password').send_keys('testPass123')
         login_button = self.browser.find_element_by_id("login-button")
         login_button.click()
+    
+    def login_page_show(self, url):
+        self.browser.get(url)
+        try:
+            self.browser.find_element_by_id('id_username')
+            self.browser.find_element_by_id('id_password')
+            self.browser.find_element_by_id("login-button")
+        except NoSuchElementException:
+            return False
+        return True
 
     def base_html_loads(self):
         # Sees Page Title and sees nav-bar
@@ -686,16 +696,6 @@ class FunctionalTest(unittest.TestCase):
 
         self.browser.get('http://localhost:8000/accounts/logout')
 
-    def login_page_show(self, url):
-        self.browser.get(url)
-        try:
-            self.browser.find_element_by_id('id_username')
-            self.browser.find_element_by_id('id_password')
-            self.browser.find_element_by_id("login-button")
-        except NoSuchElementException:
-            return False
-        return True
-
     def test_cv_authentication_urls(self):
         # Test to see if login page displays appropriately on trying to access these URLs
         self.assertFalse(self.login_page_show('http://localhost:8000/cv'))
@@ -714,6 +714,37 @@ class FunctionalTest(unittest.TestCase):
         self.assertTrue(self.login_page_show('http://localhost:8000/cv/experience/0/remove'))
         self.assertTrue(self.login_page_show('http://localhost:8000/cv/skill/0/remove'))
         self.assertTrue(self.login_page_show('http://localhost:8000/cv/education/0/remove'))
+    
+    def test_make_and_view_blog_post(self):
+        self.login()
+
+        self.browser.get('http://localhost:8000/blog/')
+
+        # Check Title & Nav-bar
+        self.base_html_loads()
+
+        # See New Post Button
+        new_post_btn = self.browser.find_element_by_id('new-post')
+        new_post_btn.click()
+
+        # Display new post form
+        self.base_html_loads()
+
+        # Notice all applicable fields
+        title = self.browser.find_element_by_id("id_title")
+        subtitle = self.browser.find_element_by_id("id_subtitle")
+        text = self.browser.find_element_by_id("id_text")
+        save = self.browser.find_element_by_class_name("save")
+
+        # Fill in the form
+        title.send_keys("Test Blog Post 1")
+        subtitle.send_keys("Test Subtitle 1")
+        text.send_keys("Test Post Text 1")
+        save.click()
+
+        #See Post Detail Page
+        
+
 
 if __name__ == '__main__':
     unittest.main(warnings='ignore')
