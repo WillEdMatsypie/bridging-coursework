@@ -2,6 +2,7 @@
 from django.urls import resolve
 from django.test import TestCase
 from django.http import HttpRequest
+from django.contrib.auth.models import User
 
 from home.views import home  
 
@@ -23,3 +24,30 @@ class HomePageTest(TestCase):
         self.assertIn('<title>Zenith\'s Blog</title>', html)  
         self.assertIn('<h1>Zenith</h1>', html)
         self.assertTrue(html.strip().endswith('</html>'))  
+
+class NavBarAuthTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user('temporary', 'temporary@gmail.com', 'temporary')
+
+    def tearDown(self):
+        self.user.delete()
+    
+    def test_nav_bar_no_auth(self):
+        response = self.client.get('/') 
+        html = response.content.decode('utf8')  
+        self.assertIn('<a class="nav-link" href="/blog/">Blog</span></a>', html)  
+        self.assertIn('<a class="nav-link" href="/cv/">CV</span></a>', html) 
+        self.assertNotIn('<a href="/blog/drafts/" class="nav-link">Drafts</span></a>', html)  
+        self.assertIn('<a href="/accounts/login/" class="nav-link">Login</a>', html)
+        self.assertNotIn('<a href="/accounts/logout/" class="nav-link">Log out</a>', html)
+    
+    def test_nav_bar_auth(self):
+        self.client.login(username='temporary', password='temporary')
+        response = self.client.get('/') 
+        html = response.content.decode('utf8')  
+        self.assertIn('<a class="nav-link" href="/blog/">Blog</span></a>', html)  
+        self.assertIn('<a class="nav-link" href="/cv/">CV</span></a>', html) 
+        self.assertIn('<a href="/blog/drafts/" class="nav-link">Drafts</span></a>', html)  
+        self.assertNotIn('<a href="/accounts/login/" class="nav-link">Login</a>', html)
+        self.assertIn('<a href="/accounts/logout/" class="nav-link">Log out</a>', html)
+        self.client.logout()
