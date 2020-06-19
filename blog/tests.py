@@ -43,6 +43,46 @@ class PostListTest(TestCase):
         self.assertIn('<a class="btn btn-outline-light center" id="new-post" href="/blog/post/new/">New Post</span></a>', html)
         self.client.logout()
 
+
+class DraftListTest(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user('temporary', 'temporary@gmail.com', 'temporary')
+
+    def tearDown(self):
+        self.user.delete()
+    
+    def test_draft_url_resolves_to_draft_list_view(self):
+        found = resolve('/blog/drafts/')  
+        self.assertEqual(found.func, post_draft_list)
+    
+    def test_uses_draft_list_template(self):
+        self.client.login(username='temporary', password='temporary')
+        response = self.client.get('/blog/drafts/')
+        self.assertTemplateUsed(response, 'post_draft_list.html')
+        self.client.logout()
+    
+    def test_draft_list_returns_correct_html(self):
+        request = HttpRequest()  
+        request.user = self.user
+        response = post_draft_list(request)  
+        html = response.content.decode('utf8')  
+        self.assertTrue(html.strip().startswith('<html>'))  
+        self.assertIn('<title>Zenith\'s Blog</title>', html)  
+        self.assertTrue(html.strip().endswith('</html>'))  
+    
+    def test_new_post_button_no_auth(self):
+        response = self.client.get('/blog/drafts/') 
+        html = response.content.decode('utf8')  
+        self.assertNotIn('<a class="btn btn-outline-light center" id="new-post" href="/blog/post/new/">New Post</span></a>', html)
+    
+    def test_new_post_button_auth(self):
+        self.client.login(username='temporary', password='temporary')
+        response = self.client.get('/blog/drafts/') 
+        html = response.content.decode('utf8')  
+        self.assertIn('<a class="btn btn-outline-light center" id="new-post" href="/blog/post/new/">New Post</span></a>', html)
+        self.client.logout()
+
 class PostModelTest(TestCase):
 
     def setUp(self):
@@ -127,6 +167,32 @@ class PostModelTest(TestCase):
         data={'title':"Bad Post",}
         response = self.client.post('/blog/post/new/', data)
         self.assertEqual(Post.objects.count(), 0) #Doesn't add to database
+
+    def test_post_url_resolves_to_draft_list_view(self):
+        data={'title':"Post 5", 'subtitle':"Subtitle 5", 'text':"Text 5",}
+        response = self.client.post('/blog/post/new/', data)
+        url = "/blog/post/" + str(Post.objects.first().pk) + "/"
+        found = resolve(url)  
+        self.assertEqual(found.func, post_detail)
+    
+    def test_uses_post_detail_template(self):
+        data={'title':"Post 6", 'subtitle':"Subtitle 6", 'text':"Text 6",}
+        response = self.client.post('/blog/post/new/', data)
+        url = "/blog/post/" + str(Post.objects.first().pk) + "/"
+        response2 = self.client.get(url)
+        self.assertTemplateUsed(response2, 'post_detail.html')
+    
+    def test_post_detail_returns_correct_html(self):
+        data={'title':"Post 7", 'subtitle':"Subtitle 7", 'text':"Text 7",}
+        response = self.client.post('/blog/post/new/', data)
+        request = HttpRequest()  
+        request.user = self.user
+        response2 = post_detail(request, Post.objects.first().pk)  
+        html = response2.content.decode('utf8')  
+        self.assertTrue(html.strip().startswith('<html>'))  
+        self.assertIn('<title>Zenith\'s Blog</title>', html)  
+        self.assertIn('<h1 style="text-align: center;">Post 7</h1>', html)
+        self.assertTrue(html.strip().endswith('</html>'))  
         
     # def test_skill_deletion(self):
     #     data={'title':"Skill 6", 'skill_type':"technical",}

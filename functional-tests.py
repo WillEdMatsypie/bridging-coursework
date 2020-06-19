@@ -742,8 +742,54 @@ class FunctionalTest(unittest.TestCase):
         text.send_keys("Test Post Text 1")
         save.click()
 
-        #See Post Detail Page
+        # See Information is correct on Post Detail Page
+        self.base_html_loads()
+        title_text = self.browser.find_element_by_tag_name('h1').text
+        self.assertEqual('Test Blog Post 1', title_text)
+
+        subtitle_text = self.browser.find_element_by_class_name('subtitle').text
+        self.assertEqual('Test Subtitle 1', subtitle_text)
+
+        all_text = self.browser.find_elements_by_tag_name('p')
+        self.assertTrue(any(post_text.text == 'Test Post Text 1' for post_text in all_text))
         
+        # Views that post is NOT published
+        navbar = self.browser.find_elements_by_class_name('nav-link')
+        for link in navbar:
+            if 'Blog' in link.text:
+                post_list_btn = link
+        
+        post_list_btn.click()
+        cards = self.browser.find_elements_by_class_name('card-body')
+        self.assertFalse(any('Test Blog Post 1' in card.text for card in cards))
+
+        # Views Post exists as a Draft
+        navbar = self.browser.find_elements_by_class_name('nav-link')
+        for link in navbar:
+            if 'Drafts' in link.text:
+                draft_btn = link
+        
+        draft_btn.click()
+        self.base_html_loads()
+
+        cards = self.browser.find_elements_by_class_name('card-body')
+        self.assertTrue(any('Test Blog Post 1' in card.text for card in cards))
+        for card in cards:
+            if 'Test Blog Post 1' in card.text:
+                title = card.find_element_by_class_name('card-title')
+                self.assertEqual(title.text, 'Test Blog Post 1')
+                self.assertIn('created', card.find_element_by_class_name('date').text)
+                self.assertEqual(card.find_element_by_class_name('subtitle').text, 'Test Subtitle 1')
+        
+        title.click()
+
+        # Publish the Draft
+
+        # See Post is now Published
+
+        # Delete Post
+
+        self.browser.get('http://localhost:8000/accounts/logout')
 
 
 if __name__ == '__main__':
