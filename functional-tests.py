@@ -836,8 +836,41 @@ class FunctionalTest(unittest.TestCase):
         post_list_btn.click()
         cards = self.browser.find_elements_by_class_name('card-body')
         self.assertTrue(any('Test Blog Post 1' in card.text for card in cards))
-
+        for card in cards:
+            if 'Test Blog Post 1' in card.text:
+                title = card.find_element_by_class_name('card-title')
+                link = title.find_element_by_tag_name('a')
+                self.assertEqual(title.text, 'Test Blog Post 1')
+                self.assertIn('published', card.find_element_by_class_name('date').text)
+                self.assertEqual(card.find_element_by_class_name('subtitle').text, 'Test Subtitle 1')
+        
         # Delete Post
+        link.click()
+
+        # See Information is correct on Post Detail Page
+        self.base_html_loads()
+        title_text = self.browser.find_element_by_tag_name('h1').text
+        self.assertEqual('Test Blog Post 1', title_text)
+
+        subtitle_text = self.browser.find_element_by_class_name('subtitle').text
+        self.assertEqual('Test Subtitle 1', subtitle_text)
+
+        all_text = self.browser.find_elements_by_tag_name('p')
+        self.assertTrue(any(post_text.text == 'Test Post Text 1' for post_text in all_text))
+
+        # Press Delete Button
+        buttons = self.browser.find_elements_by_class_name('btn')
+        for button in buttons:
+            if 'Delete' in button.text:
+                button.click()
+                break
+
+        # Redirected to post list
+        self.assertEqual(self.browser.current_url, 'http://localhost:8000/blog/')
+
+        # Confirm post is deleted
+        cards = self.browser.find_elements_by_class_name('card-body')
+        self.assertFalse(any('Test Blog Post 1' in card.text for card in cards))
 
         self.browser.get('http://localhost:8000/accounts/logout')
 

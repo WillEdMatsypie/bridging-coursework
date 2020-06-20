@@ -243,23 +243,30 @@ class PostModelTest(TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(Post.objects.count(), 0)
         
-    # def test_skill_deletion(self):
-    #     data={'title':"Skill 6", 'skill_type':"technical",}
-    #     self.client.post('/cv/skill/new/', data)
-    #     self.assertEqual(Skill.objects.count(), 1)
-    #     new_item = Skill.objects.first()
-    #     new_item.delete()
-    #     self.assertEqual(Skill.objects.count(), 0)
+    def test_post_deletion(self):
+        data={'title':"Post 12", 'subtitle':"Subtitle 12", 'text':"Text 12",}
+        self.client.post('/blog/post/new/', data)
+        self.assertEqual(Post.objects.count(), 1)
+        new_item = Post.objects.first()
+        new_item.delete()
+        self.assertEqual(Post.objects.count(), 0)
     
-    # def test_skill_deletion_url(self):
-    #     data={'title':"Skill 7", 'skill_type':"other",}
-    #     self.client.post('/cv/skill/new/', data)
-    #     self.assertEqual(Skill.objects.count(), 1)
-    #     new_item = Skill.objects.first()
-    #     url = "/cv/skill/" + str(new_item.pk) + "/remove/"
-    #     response = self.client.get(url)
-    #     self.assertEqual(Skill.objects.count(), 0)
-    #     self.assertEqual(response['location'], "/cv/")
+    def test_post_deletion_url(self):
+        data={'title':"Post 13", 'subtitle':"Subtitle 13", 'text':"Text 13",}
+        self.client.post('/blog/post/new/', data)
+        self.assertEqual(Post.objects.count(), 1)
+        new_item = Post.objects.first()
+        url = "/blog/post/" + str(new_item.pk) + "/remove/"
+        response = self.client.get(url)
+        self.assertEqual(Post.objects.count(), 0)
+        self.assertEqual(response['location'], "/blog/")
+    
+    def test_post_deletion_404(self):
+        data={'title':"Post 14", 'subtitle':"Subtitle 14", 'text':"Text 14",}
+        url = "/blog/post/" + str(1) + "/remove/"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(Post.objects.count(), 0)
 
     # def setup_edit(self, data):
     #     self.client.post('/cv/skill/new/', data)
