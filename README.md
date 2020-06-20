@@ -32,7 +32,7 @@ This site was developed following The Django Girls tutorial (https://tutorial.dj
 10. Reload Web App 
 
 ## Functional Testing the Website
-_NOTE: Run Functional Tests separately to Unit Tests_
+
 1. Open Git Bash
 2. cd your way to the project directory
 3. `source virtualenv/Scripts/activate`
