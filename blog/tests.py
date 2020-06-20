@@ -268,46 +268,48 @@ class PostModelTest(TestCase):
         self.assertEqual(response.status_code, 404)
         self.assertEqual(Post.objects.count(), 0)
 
-    # def setup_edit(self, data):
-    #     self.client.post('/cv/skill/new/', data)
-    #     self.assertEqual(Skill.objects.count(), 1)
-    #     new_item = Skill.objects.first()
-    #     return "/cv/skill/" + str(new_item.pk) + "/edit/"
+    def setup_edit(self, data):
+        self.client.post('/blog/post/new/', data)
+        self.assertEqual(Post.objects.count(), 1)
+        new_item = Post.objects.first()
+        return "/blog/post/" + str(new_item.pk) + "/edit/"
 
-    # def test_skill_edit(self):
-    #     data={'title':"Skill 8", 'skill_type':"other",}
-    #     url = self.setup_edit(data)
-    #     data2={'title':"Skill 80", 'skill_type':"technical",}
-    #     response = self.client.post(url, data2)
-    #     self.assertEqual(Skill.objects.count(), 1)
-    #     self.assertEqual(response['location'], "/cv/")
-    #     edited_item = Skill.objects.first()
-    #     self.assertEqual(edited_item.title, "Skill 80")
-    #     self.assertEqual(edited_item.skill_type, "technical")
+    def test_post_edit(self):
+        data={'title':"Post 15", 'subtitle':"Subtitle 15", 'text':"Text 15",}
+        url = self.setup_edit(data)
+        data2={'title':"Post 150", 'subtitle':"Subtitle 150", 'text':"Text 150",}
+        response = self.client.post(url, data2)
+        self.assertEqual(Post.objects.count(), 1)
+        self.assertEqual(response['location'], "/blog/post/" + str(Post.objects.first().pk) + "/")
+        edited_item = Post.objects.first()
+        self.assertEqual(edited_item.title, "Post 150")
+        self.assertEqual(edited_item.subtitle, "Subtitle 150")
+        self.assertEqual(edited_item.text, "Text 150")
     
-    # def test_skill_edit_404(self):
-    #     data={'title':"Skill 9", 'skill_type':"other",}
-    #     url = "/cv/skill/" + str(1) + "/edit/"
-    #     response = self.client.post(url, data)
-    #     self.assertEqual(response.status_code, 404)
-    #     self.assertEqual(Skill.objects.count(), 0)
+    def test_post_edit_404(self):
+        data={'title':"Post 16", 'subtitle':"Subtitle 16", 'text':"Text 16",}
+        url = "/blog/post/" + str(1) + "/edit/"
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(Post.objects.count(), 0)
     
-    # def test_url_resolves_to_skill_form_edit_view(self):
-    #     data={'title':"Skill 10", 'skill_type':"technical",}
-    #     url = self.setup_edit(data)
-    #     found = resolve(url)  
-    #     self.assertEqual(found.func, skill_edit)
+    def test_url_resolves_to_post_form_edit_view(self):
+        data={'title':"Post 17", 'subtitle':"Subtitle 17", 'text':"Text 17",}
+        url = self.setup_edit(data)
+        found = resolve(url)  
+        self.assertEqual(found.func, post_edit)
     
-    # def test_uses_skill_form_edit_template(self):
-    #     data={'title':"Skill 11", 'skill_type':"technical",}
-    #     url = self.setup_edit(data)
-    #     response = self.client.get(url)
-    #     self.assertTemplateUsed(response, 'cv/skill_edit.html')
+    def test_uses_post_form_edit_template(self):
+        data={'title':"Post 18", 'subtitle':"Subtitle 18", 'text':"Text 18",}
+        url = self.setup_edit(data)
+        response = self.client.get(url)
+        self.assertTemplateUsed(response, 'post_edit.html')
     
-    # def test_view_skill_edit_form(self):
-    #     data={'title':"Skill 12", 'skill_type':"technical",}
-    #     url = self.setup_edit(data)
-    #     response = self.client.get(url)
-    #     self.assertIsInstance(response.context['form'], SkillForm) 
-    #     self.assertContains(response, 'name="title"')
-    #     self.assertContains(response, 'name="skill_type')
+    def test_view_post_edit_form(self):
+        data={'title':"Post 19", 'subtitle':"Subtitle 19", 'text':"Text 19",}
+        url= self.setup_edit(data)
+        response = self.client.get(url)
+        self.assertIsInstance(response.context['form'], PostForm) 
+        self.assertContains(response, 'name="title"')
+        self.assertContains(response, 'name="subtitle')
+        self.assertContains(response, 'name="text')

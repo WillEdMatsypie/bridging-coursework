@@ -951,6 +951,168 @@ class FunctionalTest(unittest.TestCase):
 
         self.browser.get('http://localhost:8000/accounts/logout')
 
+    def test_make_and_edit_posts(self):
+        self.login()
+
+        self.browser.get('http://localhost:8000/blog/')
+
+        # Check Title & Nav-bar
+        self.base_html_loads()
+
+        # See New Post Button
+        new_post_btn = self.browser.find_element_by_id('new-post')
+        new_post_btn.click()
+
+        # Display new post form
+        self.base_html_loads()
+
+        # Notice all applicable fields
+        title = self.browser.find_element_by_id("id_title")
+        subtitle = self.browser.find_element_by_id("id_subtitle")
+        text = self.browser.find_element_by_id("id_text")
+        save = self.browser.find_element_by_class_name("save")
+
+        # Fill in the form
+        title.send_keys("Test Blog Post 3")
+        subtitle.send_keys("Test Subtitle 3")
+        text.send_keys("Test Post Text 3")
+        save.click()
+
+        # Views Post content on Draft Page
+        navbar = self.browser.find_elements_by_class_name('nav-link')
+        for link in navbar:
+            if 'Drafts' in link.text:
+                draft_btn = link
+        
+        draft_btn.click()
+        self.base_html_loads()
+
+        cards = self.browser.find_elements_by_class_name('card-body')
+        self.assertTrue(any('Test Blog Post 3' in card.text for card in cards))
+        for card in cards:
+            if 'Test Blog Post 3' in card.text:
+                title = card.find_element_by_class_name('card-title')
+                link = title.find_element_by_tag_name('a')
+                self.assertEqual(title.text, 'Test Blog Post 3')
+                self.assertIn('created', card.find_element_by_class_name('date').text)
+                self.assertEqual(card.find_element_by_class_name('subtitle').text, 'Test Subtitle 3')
+        
+        # Open Post and see Edit Button
+        link.click()
+        buttons = self.browser.find_elements_by_class_name('btn')
+        for button in buttons:
+            if 'Edit' in button.text:
+                button.click()
+                break
+        
+        # See Edit form
+        title = self.browser.find_element_by_id("id_title")
+        subtitle = self.browser.find_element_by_id("id_subtitle")
+        text = self.browser.find_element_by_id("id_text")
+        save = self.browser.find_element_by_class_name("save")
+
+        # Fill in the form
+        title.send_keys(" EDT")
+        subtitle.send_keys(" EITED")
+        text.send_keys(" HELLA EDITED")
+        save.click()
+
+        # Check edited post content
+        title_text = self.browser.find_element_by_tag_name('h1').text
+        self.assertEqual('Test Blog Post 3 EDT', title_text)
+
+        subtitle_text = self.browser.find_element_by_class_name('subtitle').text
+        self.assertEqual('Test Subtitle 3 EITED', subtitle_text)
+
+        all_text = self.browser.find_elements_by_tag_name('p')
+        self.assertTrue(any(post_text.text == 'Test Post Text 3 HELLA EDITED' for post_text in all_text))
+
+        # Go to Drafts Page
+        navbar = self.browser.find_elements_by_class_name('nav-link')
+        for link in navbar:
+            if 'Drafts' in link.text:
+                draft_btn = link
+        
+        draft_btn.click()
+        self.base_html_loads()
+
+        cards = self.browser.find_elements_by_class_name('card-body')
+        self.assertTrue(any('Test Blog Post 3 EDT' in card.text for card in cards))
+        for card in cards:
+            if 'Test Blog Post 3 EDT' in card.text:
+                title = card.find_element_by_class_name('card-title')
+                link = title.find_element_by_tag_name('a')
+                self.assertEqual(title.text, 'Test Blog Post 3 EDT')
+                self.assertIn('created', card.find_element_by_class_name('date').text)
+                self.assertEqual(card.find_element_by_class_name('subtitle').text, 'Test Subtitle 3 EITED')
+        
+        # We are happy with the post so let's publish it
+        link.click()
+        buttons = self.browser.find_elements_by_class_name('btn')
+        for button in buttons:
+            if 'Publish' in button.text:
+                button.click()
+                break
+        
+        # Oh no, there's some typos, let's edit that
+        buttons = self.browser.find_elements_by_class_name('btn')
+        for button in buttons:
+            if 'Edit' in button.text:
+                button.click()
+                break
+        
+        # See Edit form
+        title = self.browser.find_element_by_id("id_title")
+        subtitle = self.browser.find_element_by_id("id_subtitle")
+        text = self.browser.find_element_by_id("id_text")
+        save = self.browser.find_element_by_class_name("save")
+
+        # Fill in the form
+        title.clear()
+        title.send_keys("Final Blog Post EDIT 3")
+        subtitle.clear()
+        subtitle.send_keys("Final Subtitle EDITED 3")
+        text.clear()
+        text.send_keys("Maybe there should be a real article here or something.")
+        save.click()
+
+        # Check Edited content
+        title_text = self.browser.find_element_by_tag_name('h1').text
+        self.assertEqual('Final Blog Post EDIT 3', title_text)
+
+        subtitle_text = self.browser.find_element_by_class_name('subtitle').text
+        self.assertEqual('Final Subtitle EDITED 3', subtitle_text)
+
+        all_text = self.browser.find_elements_by_tag_name('p')
+        self.assertTrue(any(post_text.text == 'Maybe there should be a real article here or something.' for post_text in all_text))
+
+        # View post in post list
+        navbar = self.browser.find_elements_by_class_name('nav-link')
+        for link in navbar:
+            if 'Blog' in link.text:
+                post_list_btn = link
+        
+        post_list_btn.click()
+        cards = self.browser.find_elements_by_class_name('card-body')
+        self.assertTrue(any('Final Blog Post EDIT 3' in card.text for card in cards))
+        for card in cards:
+            if 'Final Blog Post EDIT 3' in card.text:
+                title = card.find_element_by_class_name('card-title')
+                link = title.find_element_by_tag_name('a')
+                self.assertEqual(title.text, 'Final Blog Post EDIT 3')
+                self.assertIn('published', card.find_element_by_class_name('date').text)
+                self.assertEqual(card.find_element_by_class_name('subtitle').text, 'Final Subtitle EDITED 3')
+        
+        # Finally, delete the post
+        link.click()
+        buttons = self.browser.find_elements_by_class_name('btn')
+        for button in buttons:
+            if 'Delete' in button.text:
+                button.click()
+                break
+        
+        cards = self.browser.find_elements_by_class_name('card-body')
+        self.assertFalse(any('Final Blog Post EDIT 3' in card.text for card in cards))
 
 if __name__ == '__main__':
     unittest.main(warnings='ignore')
