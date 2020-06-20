@@ -149,6 +149,7 @@ class PostModelTest(TestCase):
         new_item = Post.objects.first()
         self.assertEqual(new_item.title, "Post 3")
         self.assertEqual(new_item.subtitle, "Subtitle 3")
+        self.assertEqual(new_item.text, "Text 3")
 
     def test_redirect_after_POST_submission(self):
         data={'title':"Post 4", 'subtitle':"Subtitle 4", 'text':"Text 4",}
@@ -168,7 +169,7 @@ class PostModelTest(TestCase):
         response = self.client.post('/blog/post/new/', data)
         self.assertEqual(Post.objects.count(), 0) #Doesn't add to database
 
-    def test_post_url_resolves_to_draft_list_view(self):
+    def test_post_url_resolves_to_detail_view(self):
         data={'title':"Post 5", 'subtitle':"Subtitle 5", 'text':"Text 5",}
         response = self.client.post('/blog/post/new/', data)
         url = "/blog/post/" + str(Post.objects.first().pk) + "/"
@@ -193,6 +194,54 @@ class PostModelTest(TestCase):
         self.assertIn('<title>Zenith\'s Blog</title>', html)  
         self.assertIn('<h1 style="text-align: center;">Post 7</h1>', html)
         self.assertTrue(html.strip().endswith('</html>'))  
+
+    def test_post_detail_404(self):
+        data={'title':"Post 10", 'subtitle':"Subtitle 10", 'text':"Text 10",}
+        url = "/blog/post/" + str(1) + "/"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_publish_post(self):
+        item = Post()
+        item.title = "Post 8"
+        item.subtitle = "Subtitle 8"
+        item.text = "Text 8"
+        item.author = self.user
+        item.save()
+        self.assertEqual(item.published_date, None)
+        self.assertEqual(Post.objects.count(), 1)
+        item.publish()
+        item = Post.objects.get(pk=item.pk)
+        self.assertEqual(Post.objects.count(), 1)
+        self.assertNotEqual(item.published_date, None)
+        self.assertEqual(item.title, "Post 8")
+        self.assertEqual(item.subtitle, "Subtitle 8")
+        self.assertEqual(item.text, "Text 8")
+
+    def test_publish_post_url(self):
+        item = Post()
+        item.title = "Post 9"
+        item.subtitle = "Subtitle 9"
+        item.text = "Text 9"
+        item.author = self.user
+        item.save()
+        self.assertEqual(item.published_date, None)
+        self.assertEqual(Post.objects.count(), 1)
+        url = "/blog/post/" + str(item.pk) + "/"
+        url2 = url + "publish/"
+        response = self.client.post(url2)
+        item = Post.objects.get(pk=item.pk)
+        self.assertEqual(Post.objects.count(), 1)
+        self.assertNotEqual(item.published_date, None)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['location'], url)
+    
+    def test_post_publish_404(self):
+        data={'title':"Post 11", 'subtitle':"Subtitle 11", 'text':"Text 11",}
+        url = "/blog/post/" + str(1) + "/publish/"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(Post.objects.count(), 0)
         
     # def test_skill_deletion(self):
     #     data={'title':"Skill 6", 'skill_type':"technical",}
