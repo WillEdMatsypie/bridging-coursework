@@ -873,6 +873,83 @@ class FunctionalTest(unittest.TestCase):
         self.assertFalse(any('Test Blog Post 1' in card.text for card in cards))
 
         self.browser.get('http://localhost:8000/accounts/logout')
+    
+
+    def test_make_and_delete_draft(self):
+        self.login()
+
+        self.browser.get('http://localhost:8000/blog/drafts/')
+
+        # Check Title & Nav-bar
+        self.base_html_loads()
+
+        # See New Post Button
+        new_post_btn = self.browser.find_element_by_id('new-post')
+        new_post_btn.click()
+
+        # Display new post form
+        self.base_html_loads()
+
+        # Notice all applicable fields
+        title = self.browser.find_element_by_id("id_title")
+        subtitle = self.browser.find_element_by_id("id_subtitle")
+        text = self.browser.find_element_by_id("id_text")
+        save = self.browser.find_element_by_class_name("save")
+
+        # Fill in the form
+        title.send_keys("Test Blog Post 2")
+        subtitle.send_keys("Test Subtitle 2")
+        text.send_keys("Test Post Text 2")
+        save.click()
+        
+        # Views Post exists as a Draft
+        navbar = self.browser.find_elements_by_class_name('nav-link')
+        for link in navbar:
+            if 'Drafts' in link.text:
+                draft_btn = link
+        
+        draft_btn.click()
+        self.base_html_loads()
+
+        cards = self.browser.find_elements_by_class_name('card-body')
+        self.assertTrue(any('Test Blog Post 2' in card.text for card in cards))
+        for card in cards:
+            if 'Test Blog Post 2' in card.text:
+                title = card.find_element_by_class_name('card-title')
+                link = title.find_element_by_tag_name('a')
+                self.assertEqual(title.text, 'Test Blog Post 2')
+                self.assertIn('created', card.find_element_by_class_name('date').text)
+                self.assertEqual(card.find_element_by_class_name('subtitle').text, 'Test Subtitle 2')
+
+        # Delete Post
+        link.click()
+
+        # Press Delete Button
+        buttons = self.browser.find_elements_by_class_name('btn')
+        for button in buttons:
+            if 'Delete' in button.text:
+                button.click()
+                break
+
+        # Redirected to post list
+        self.assertEqual(self.browser.current_url, 'http://localhost:8000/blog/')
+
+        # Confirm post is deleted
+        cards = self.browser.find_elements_by_class_name('card-body')
+        self.assertFalse(any('Test Blog Post 2' in card.text for card in cards))
+
+        navbar = self.browser.find_elements_by_class_name('nav-link')
+        for link in navbar:
+            if 'Drafts' in link.text:
+                draft_btn = link
+        
+        draft_btn.click()
+        self.base_html_loads()
+
+        cards = self.browser.find_elements_by_class_name('card-body')
+        self.assertFalse(any('Test Blog Post 2' in card.text for card in cards))
+
+        self.browser.get('http://localhost:8000/accounts/logout')
 
 
 if __name__ == '__main__':
