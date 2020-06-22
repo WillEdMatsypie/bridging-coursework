@@ -16,7 +16,7 @@
                             </div>
                             <h5 class="card-title"><a href="{% url 'post_detail' pk=post.pk %}">{{ post.title }}</a></h5>
                             <p class="brief_text subtitle card-text">{{ post.subtitle|linebreaksbr }}</p>
-                            <a href="{% url 'post_detail' pk=post.pk %}">Comments: {{ post.approved_comments.count }}</a>
+                            <a class="card-comments" href="{% url 'post_detail' pk=post.pk %}">Comments: {{ post.approved_comments.count }}</a>
                         </div>
                     </div>
                 </div>

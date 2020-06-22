@@ -1114,6 +1114,194 @@ class FunctionalTest(unittest.TestCase):
         cards = self.browser.find_elements_by_class_name('card-body')
         self.assertFalse(any('Final Blog Post EDIT 3' in card.text for card in cards))
 
+        self.browser.get('http://localhost:8000/accounts/logout')
+
+
+    def check_number_of_comments(self, number):
+        cards = self.browser.find_elements_by_class_name('card-body')
+        self.assertTrue(any('Test Blog Post 4' in card.text for card in cards))
+        for card in cards:
+            if 'Test Blog Post 4' in card.text:
+                title = card.find_element_by_class_name('card-title')
+                link = title.find_element_by_tag_name('a')
+                comments = card.find_element_by_class_name('card-comments')
+                self.assertEqual(title.text, 'Test Blog Post 4')
+                self.assertEqual(comments.text, 'Comments: ' + str(number))
+        
+        return link
+
+    def test_blog_comments(self):
+        self.login()
+
+        self.browser.get('http://localhost:8000/blog/')
+
+        # Create a Post
+        new_post_btn = self.browser.find_element_by_id('new-post')
+        new_post_btn.click()
+
+        # Notice all applicable fields
+        title = self.browser.find_element_by_id("id_title")
+        subtitle = self.browser.find_element_by_id("id_subtitle")
+        text = self.browser.find_element_by_id("id_text")
+        save = self.browser.find_element_by_class_name("save")
+
+        # Fill in the form
+        title.send_keys("Test Blog Post 4")
+        subtitle.send_keys("Test Subtitle 4")
+        text.send_keys("Test Post Text 4")
+        save.click()
+
+        # Add a comment to the post
+        buttons = self.browser.find_elements_by_class_name('btn')
+        for button in buttons:
+            if 'Add comment' in button.text:
+                button.click()
+                break
+        
+        # See form loads correctly
+        self.base_html_loads()
+        author = self.browser.find_element_by_id("id_author")
+        text = self.browser.find_element_by_id("id_text")
+        save = self.browser.find_element_by_class_name("save")
+
+        # Enter data in all fields
+        author.send_keys("Test Author 1")
+        text.send_keys("Test Comment Text 1")
+        save.click()
+
+        # See comment is on post
+        all_text = self.browser.find_elements_by_class_name('comment')
+        self.assertTrue(any(comment_text.find_element_by_tag_name('strong').text == 'Test Author 1' and \
+                        any(paragraph.text == 'Test Comment Text 1' for paragraph in comment_text.find_elements_by_tag_name('p')) for comment_text in all_text))
+
+        # See number of comments on post draft is still 0 (Becuase the comment is unapproved)
+        navbar = self.browser.find_elements_by_class_name('nav-link')
+        for link in navbar:
+            if 'Drafts' in link.text:
+                draft_btn = link
+
+        draft_btn.click()
+
+        link = self.check_number_of_comments(0)
+        
+        # Approve the Comment
+        link.click()
+        buttons = self.browser.find_elements_by_class_name('btn')
+        for button in buttons:
+            if 'Approve' in button.text:
+                button.click()
+                break
+        
+        # See number of comments on draft is now 1
+        navbar = self.browser.find_elements_by_class_name('nav-link')
+        for link in navbar:
+            if 'Drafts' in link.text:
+                draft_btn = link
+
+        draft_btn.click()
+
+        link = self.check_number_of_comments(1)
+        
+        # Publish the post
+        link.click()
+        buttons = self.browser.find_elements_by_class_name('btn')
+        for button in buttons:
+            if 'Publish' in button.text:
+                button.click()
+                break
+        
+        # Add another comment
+        buttons = self.browser.find_elements_by_class_name('btn')
+        for button in buttons:
+            if 'Add comment' in button.text:
+                button.click()
+                break
+        
+        # See form loads correctly
+        self.base_html_loads()
+        author = self.browser.find_element_by_id("id_author")
+        text = self.browser.find_element_by_id("id_text")
+        save = self.browser.find_element_by_class_name("save")
+
+        # Enter data in all fields
+        author.send_keys("Test Author 2")
+        text.send_keys("Test Comment Text 2")
+        save.click()
+
+        # See both comments on post
+        all_text = self.browser.find_elements_by_class_name('comment')
+        self.assertTrue(any(comment_text.find_element_by_tag_name('strong').text == 'Test Author 1' and \
+                        any(paragraph.text == 'Test Comment Text 1' for paragraph in comment_text.find_elements_by_tag_name('p')) for comment_text in all_text))
+        self.assertTrue(any(comment_text.find_element_by_tag_name('strong').text == 'Test Author 2' and \
+                        any(paragraph.text == 'Test Comment Text 2' for paragraph in comment_text.find_elements_by_tag_name('p')) for comment_text in all_text))
+        
+        # See post list says 1 comment still (2nd comment not approved yet)
+        navbar = self.browser.find_elements_by_class_name('nav-link')
+        for link in navbar:
+            if 'Blog' in link.text:
+                blog_btn = link
+
+        blog_btn.click()
+
+        link = self.check_number_of_comments(1)
+
+        # Approve the comment and check the number goes up to 2
+        link.click()
+        buttons = self.browser.find_elements_by_class_name('btn')
+        for button in buttons:
+            if 'Approve' in button.text:
+                button.click()
+                break
+        
+        # See number of comments on draft is now 1
+        navbar = self.browser.find_elements_by_class_name('nav-link')
+        for link in navbar:
+            if 'Blog' in link.text:
+                blog_btn = link
+
+        blog_btn.click()
+
+        link = self.check_number_of_comments(2)
+        
+        # Delete the first comment 
+        link.click()
+        all_text = self.browser.find_elements_by_class_name('comment')
+        for comment in all_text:
+            if 'Test Comment Text 1' in comment.text:
+                btn = comment.find_element_by_tag_name('a')
+                btn.click()
+                break
+
+        time.sleep(1)
+
+        all_text = self.browser.find_elements_by_class_name('comment')
+        self.assertFalse(any(comment_text.find_element_by_tag_name('strong').text == 'Test Author 1' and \
+                        any(paragraph.text == 'Test Comment Text 1' for paragraph in comment_text.find_elements_by_tag_name('p')) for comment_text in all_text))
+        self.assertTrue(any(comment_text.find_element_by_tag_name('strong').text == 'Test Author 2' and \
+                        any(paragraph.text == 'Test Comment Text 2' for paragraph in comment_text.find_elements_by_tag_name('p')) for comment_text in all_text))
+        
+        # Check number of comments has reduced to 1 in post list
+        navbar = self.browser.find_elements_by_class_name('nav-link')
+        for link in navbar:
+            if 'Blog' in link.text:
+                blog_btn = link
+
+        blog_btn.click()
+
+        link = self.check_number_of_comments(1)
+
+        # Delete the post
+        link.click()
+
+        # Press Delete Button
+        buttons = self.browser.find_elements_by_class_name('btn')
+        for button in buttons:
+            if 'Delete' in button.text:
+                button.click()
+                break
+        
+        self.browser.get('http://localhost:8000/accounts/logout')
+
 if __name__ == '__main__':
     unittest.main(warnings='ignore')
 # In Terminal use the command `python manage.py test functional-tests` to run these
