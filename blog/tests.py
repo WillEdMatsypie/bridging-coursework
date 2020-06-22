@@ -604,3 +604,167 @@ class CommentModelTest(TestCase):
         self.assertEqual(Post.objects.count(), 1)
         self.assertEqual(Comment.objects.count(), 0)
 
+class AuthenticationTest(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user('temporary', 'temporary@gmail.com', 'temporary')
+
+    def tearDown(self):
+        self.user.delete()
+
+    def test_new_post_form_unauthenticated(self):
+        response = self.client.get('/blog/post/new/')
+        self.assertNotEqual(response['location'], "/blog/post/new/")
+        self.assertEqual(response['location'], "/accounts/login/?next=/blog/post/new/")
+    
+    def test_new_post_post_unauthenticated(self):
+        data={'title':"No Auth Post 1", 'subtitle':"No Auth Subtitle 1", 'text':"No Auth Text 1",}
+        response = self.client.post('/blog/post/new/', data)
+        self.assertEqual(Post.objects.count(), 0)
+        self.assertEqual(response['location'], "/accounts/login/?next=/blog/post/new/")
+    
+    def test_edit_post_form_unauthenticated(self):
+        item = Post()
+        item.title = "No Auth Post 2"
+        item.subtitle = "No Auth Subtitle 2"
+        item.text = "No Auth Text 2"
+        item.author = self.user
+        item.save()
+        self.assertEqual(Post.objects.count(), 1)
+        new_item = Post.objects.first()
+        url = "/blog/post/" + str(new_item.pk) + "/edit/"
+        response = self.client.get(url)
+        self.assertEqual(Post.objects.count(), 1)
+        self.assertNotEqual(response['location'], url)
+        self.assertEqual(response['location'], "/accounts/login/?next="+url)
+        unedited_item = Post.objects.first()
+        self.assertEqual(unedited_item.title, "No Auth Post 2")
+
+    def test_edit_post_post_unauthenticated(self):
+        item = Post()
+        item.title = "No Auth Post 3"
+        item.subtitle = "No Auth Subtitle 3"
+        item.text = "No Auth Text 3"
+        item.author = self.user
+        item.save()
+        self.assertEqual(Post.objects.count(), 1)
+        new_item = Post.objects.first()
+        url = "/blog/post/" + str(new_item.pk) + "/edit/"
+        data={'title':"No Auth Post 30", 'subtitle':'No Auth Subtitle 30', 'text':'No Auth Text 30'}
+        response = self.client.post(url, data)
+        self.assertEqual(Post.objects.count(), 1)
+        self.assertNotEqual(response['location'], url)
+        self.assertEqual(response['location'], "/accounts/login/?next="+url)
+        unedited_item = Post.objects.first()
+        self.assertEqual(unedited_item.title, "No Auth Post 3")
+    
+    def test_delete_post_unauthenticated(self):
+        item = Post()
+        item.title = "No Auth Post 4"
+        item.subtitle = "No Auth Subtitle 4"
+        item.text = "No Auth Text 4"
+        item.author = self.user
+        item.save()
+        self.assertEqual(Post.objects.count(), 1)
+        new_item = Post.objects.first()
+        url = "/blog/post/" + str(new_item.pk) + "/remove/"
+        response = self.client.get(url)
+        self.assertEqual(Post.objects.count(), 1)
+        self.assertNotEqual(response['location'], "/blog/")
+        self.assertEqual(response['location'], "/accounts/login/?next="+url)
+    
+    def test_publish_post_unauthenticated(self):
+        item = Post()
+        item.title = "No Auth Post 5"
+        item.subtitle = "No Auth Subtitle 5"
+        item.text = "No Auth Text 5"
+        item.author = self.user
+        item.save()
+        self.assertEqual(Post.objects.count(), 1)
+        self.assertEqual(item.published_date, None)
+        new_item = Post.objects.first()
+        url = "/blog/post/" + str(new_item.pk) + "/publish/"
+        response = self.client.get(url)
+        unedited_item = Post.objects.first()
+        self.assertEqual(Post.objects.count(), 1)
+        self.assertEqual(unedited_item.published_date, None)
+        self.assertNotEqual(response['location'], "/blog/post/"+str(item.pk))
+        self.assertEqual(response['location'], "/accounts/login/?next="+url)
+    
+    def setup_comment_test(self):
+        item = Post()
+        item.title = "No Auth Base Post"
+        item.subtitle = "No Auth Base Subtitle"
+        item.text = "No Auth Base Text"
+        item.author = self.user
+        item.save()
+        return item
+    
+    def test_delete_comment_unauthenticated(self):
+        item = Comment()
+        item.post = self.setup_comment_test()
+        item.author = "No Auth Author 1"
+        item.text = "No Auth Text 1"
+        item.save()
+        self.assertEqual(Comment.objects.count(), 1)
+        new_item = Comment.objects.first()
+        url = "/blog/comment/" + str(new_item.pk) + "/remove/"
+        response = self.client.get(url)
+        self.assertEqual(Comment.objects.count(), 1)
+        self.assertNotEqual(response['location'], "/blog/post/"+str(item.post.pk))
+        self.assertEqual(response['location'], "/accounts/login/?next="+url)
+
+    def test_approve_comment_unauthenticated(self):
+        item = Comment()
+        item.post = self.setup_comment_test()
+        item.author = "No Auth Author 2"
+        item.text = "No Auth Text 2"
+        item.save()
+        self.assertEqual(Comment.objects.count(), 1)
+        self.assertFalse(item.approved_comment)
+        new_item = Comment.objects.first()
+        url = "/blog/comment/" + str(new_item.pk) + "/approve/"
+        response = self.client.get(url)
+        unedited_item = Comment.objects.first()
+        self.assertEqual(Comment.objects.count(), 1)
+        self.assertFalse(unedited_item.approved_comment)
+        self.assertNotEqual(response['location'], "/blog/post/"+str(item.post.pk))
+        self.assertEqual(response['location'], "/accounts/login/?next="+url)
+    
+    def setup_visible_test(self):
+        item = Post()
+        item.title = "No Auth Base Post"
+        item.subtitle = "No Auth Base Subtitle"
+        item.text = "No Auth Base Text"
+        item.author = self.user
+        item.save()
+
+        item2 = Comment()
+        item2.post = item
+        item2.author = "No Auth Base Author"
+        item2.text = "No Auth Base Text"
+        item2.save()
+        return item, item2
+
+    def test_detail_view_buttons_unauthenticated(self):
+        post, comment = self.setup_visible_test()
+        response = self.client.get('/blog/post/' + str(post.pk)  + '/') 
+        html = response.content.decode('utf8')  
+        self.assertNotIn('<a class="btn btn-outline-dark" href="/blog/post/'+ str(post.pk) + '/edit/">Edit</span></a>', html)  
+        self.assertNotIn('<a class="btn btn-outline-dark" href="/blog/post/'+ str(post.pk) + '/publish/">Publish</span></a>', html)  
+        self.assertNotIn('<a class="btn btn-outline-dark" href="/blog/post/'+ str(post.pk) + '/remove/">Delete</span></a>', html)  
+        self.assertNotIn('<a class="btn btn-outline-dark" href="/blog/comment/'+ str(comment.pk) +'/approve/">Approve</span></a>', html)
+        self.assertNotIn('<a class="btn btn-outline-dark" href="/blog/comment/'+ str(comment.pk) +'/remove/">Delete</span></a>', html)
+
+    def test_detail_view_buttons_authenticated(self):
+        self.client.login(username='temporary', password='temporary')
+        post, comment = self.setup_visible_test()
+        response = self.client.get('/blog/post/' + str(post.pk) + '/') 
+        html = response.content.decode('utf8')  
+        self.assertIn('<a class="btn btn-outline-dark" href="/blog/post/'+ str(post.pk) + '/edit/">Edit</span></a>', html)  
+        self.assertIn('<a class="btn btn-outline-dark" href="/blog/post/'+ str(post.pk) + '/publish/">Publish</span></a>', html)  
+        self.assertIn('<a class="btn btn-outline-dark" href="/blog/post/'+ str(post.pk) + '/remove/">Delete</span></a>', html)  
+        self.assertIn('<a class="btn btn-outline-dark" href="/blog/comment/'+ str(comment.pk) +'/approve/">Approve</span></a>', html)
+        self.assertIn('<a class="btn btn-outline-dark" href="/blog/comment/'+ str(comment.pk) +'/remove/">Delete</span></a>', html)
+        self.client.logout()
+
