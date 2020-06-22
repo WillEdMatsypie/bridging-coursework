@@ -1302,6 +1302,24 @@ class FunctionalTest(unittest.TestCase):
         
         self.browser.get('http://localhost:8000/accounts/logout')
 
+    
+    def test_blog_authentication_urls(self):
+        # Test to see if login page displays appropriately on trying to access these URLs
+        self.assertFalse(self.login_page_show('http://localhost:8000/blog'))
+        self.assertTrue(self.login_page_show('http://localhost:8000/blog/drafts/'))
+        self.assertFalse(self.login_page_show('http://localhost:8000/blog/post/0'))
+
+        self.assertTrue(self.login_page_show('http://localhost:8000/blog/post/new'))
+        self.assertTrue(self.login_page_show('http://localhost:8000/blog/post/0/publish'))
+        self.assertTrue(self.login_page_show('http://localhost:8000/blog/post/0/edit'))
+        self.assertTrue(self.login_page_show('http://localhost:8000/blog/post/0/remove'))
+
+        self.assertFalse(self.login_page_show('http://localhost:8000/blog/post/0/comment/'))
+
+        self.assertTrue(self.login_page_show('http://localhost:8000/blog/comment/0/approve'))
+        self.assertTrue(self.login_page_show('http://localhost:8000/blog/comment/0/remove'))
+
+
 if __name__ == '__main__':
     unittest.main(warnings='ignore')
 # In Terminal use the command `python manage.py test functional-tests` to run these
